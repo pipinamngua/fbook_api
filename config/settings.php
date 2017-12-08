@@ -64,6 +64,8 @@ return [
         'huynh.quang.diep@framgia.com',
         'trinh.duc.toan@framgia.com',
         'pham.thi.nhai@framgia.com',
+        'le.vu.tan.tuan@framgia.com',
+        'le.quang.dao@framgia.com',
     ],
     'admin' => 'admin',
     'user' => 'user',
