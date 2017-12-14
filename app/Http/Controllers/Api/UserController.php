@@ -14,6 +14,7 @@ class UserController extends ApiController
         'title',
         'description',
         'author',
+        'code',
         'publish_date',
         'avg_star',
         'total_page',
@@ -36,6 +37,7 @@ class UserController extends ApiController
     ];
 
     protected $imageSelect = [
+        'id',
         'path',
         'size',
         'thumb_path',
