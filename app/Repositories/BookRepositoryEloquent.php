@@ -810,18 +810,21 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         }
 
         foreach (config('settings.email_admin') as $admin) {
-            $user_admin_id = app(User::class)->where('email', $admin)->first()->id;
-            Event::fire('androidNotification', config('model.notification.admin.request_edit_book'));
-            $message = '' . $this->user->name . ' request edit book: ' . $book->title;
-            event(new NotificationHandler($message, $user_admin_id, config('model.notification.admin.request_edit_book')));
-            Event::fire('notification', [
-                [
-                    'current_user_id' => $this->user->id,
-                    'get_user_id' => $user_admin_id,
-                    'target_id' => $book->id,
-                    'type' => config('model.notification.admin.request_edit_book'),
-                ]
-            ]);
+            $user_admin = app(User::class)->where('email', $admin)->first();
+            if ($user_admin) {
+                $user_admin_id = $user_admin->id;
+                Event::fire('androidNotification', config('model.notification.admin.request_edit_book'));
+                $message = '' . $this->user->name . ' request edit book: ' . $book->title;
+                event(new NotificationHandler($message, $user_admin_id, config('model.notification.admin.request_edit_book')));
+                Event::fire('notification', [
+                    [
+                        'current_user_id' => $this->user->id,
+                        'get_user_id' => $user_admin_id,
+                        'target_id' => $book->id,
+                        'type' => config('model.notification.admin.request_edit_book'),
+                    ]
+                ]);
+            }
         }
     }
 
