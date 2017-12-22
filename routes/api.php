@@ -58,7 +58,7 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::post('books/approve/{book_id}', ['as' => 'books.approve', 'uses' => 'BookController@approve']);
         Route::get('users/books/owned', ['as' => 'users.books.owned', 'uses' => 'UserController@ownedBooks']);
         Route::resource('books', 'BookController', [
-            'only' => ['store', 'update', 'destroy']
+            'only' => ['store']
         ]);
         Route::get('books/add-owner/{book_id}', ['as' => 'books.add-owner', 'uses' => 'BookController@addOwner']);
         Route::get('books/remove-owner/{book_id}', ['as' => 'books.remove-owner', 'uses' => 'BookController@removeOwner']);
@@ -77,5 +77,8 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::get('waiting-update-book', ['as' => 'users.waiting-update-book', 'uses' => 'UserController@getWaitingApproveEditBook']);
         Route::post('books/approve-request-edit/{update_book_id}', ['as' => 'books.approve.request.edit', 'uses' => 'BookController@approveRequestUpdate']);
         Route::delete('books/delete-request-edit/{update_book_id}', ['as' => 'books.delete.request.edit', 'uses' => 'BookController@deleteRequestUpdate']);
+        Route::resource('books', 'BookController', [
+            'only' => ['update', 'destroy']
+        ]);
     });
 });

@@ -343,6 +343,7 @@ class BookTest extends TestCase
         $data['book_id'] = $book->id;
         $data['status'] = config('model.book_user.status.waiting');
         $data['owner_id'] = $this->createUser()->id;
+        $data['days_to_read'] = 7;
 
         $response = $this->call('POST', route('api.v0.books.booking'), ['item' => $data], [], [], $headers);
         $response->assertJsonStructure([
@@ -633,7 +634,7 @@ class BookTest extends TestCase
         ])->assertStatus(401);
     }
 
-    /* TEST UPDATE BOOKS */
+    /* TEST REQUEST UPDATE BOOKS */
 
     public function testUpdateBookNotOwner()
     {
@@ -645,7 +646,7 @@ class BookTest extends TestCase
         $dataBook['medias'][0]['file'] = UploadedFile::fake()->image(str_random(20) . '.jpg', 100, 100)->size(100);
         $dataBook['medias'][0]['type'] = config('model.media.type.avatar_book');
 
-        $response = $this->call('PUT', route('api.v0.books.update', $bookId), $dataBook, [], [], $headers);
+        $response = $this->call('PUT', route('api.v0.books.request.update', $bookId), $dataBook, [], [], $headers);
         $response->assertJsonStructure([
             'message' => [
                 'status', 'code',
@@ -663,7 +664,7 @@ class BookTest extends TestCase
         $headers = $this->getFauthHeaders();
         $bookId = factory(Book::class)->create()->id;
 
-        $response = $this->call('PUT', route('api.v0.books.update', $bookId), [], [], [], $headers);
+        $response = $this->call('PUT', route('api.v0.books.request.update', $bookId), [], [], [], $headers);
         $response->assertJsonStructure([
             'message' => [
                 'status', 'code', 'description'
@@ -685,7 +686,7 @@ class BookTest extends TestCase
         $dataBook['office_id'] = factory(Office::class)->create()->id;
         $dataBook['medias'][0]['file'] = UploadedFile::fake()->image(str_random(20) . '.jpg', 100, 100)->size(100);
 
-        $response = $this->call('PUT', route('api.v0.books.update', $bookId), $dataBook, [], [], $headers);
+        $response = $this->call('PUT', route('api.v0.books.request.update', $bookId), $dataBook, [], [], $headers);
         $response->assertJsonStructure([
             'message' => [
                 'status', 'code', 'description'
@@ -697,6 +698,7 @@ class BookTest extends TestCase
             ]
         ])->assertStatus(401);
     }
+
 
     /* TEST DELETE BOOKS */
 
