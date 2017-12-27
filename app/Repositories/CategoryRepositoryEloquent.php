@@ -26,4 +26,17 @@ class CategoryRepositoryEloquent extends AbstractRepositoryEloquent implements C
     {
         return $this->model()->create($data);
     }
+
+    public function update($categoryId, array $data)
+    {
+        try {
+            $result = $this->model()
+                ->where('id', $categoryId)
+                ->update($data);
+        } catch (Execption $e) {
+            throw new QueryException($e->getMessage());
+        }
+
+        return $result;
+    }
 }
