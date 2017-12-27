@@ -80,5 +80,8 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::resource('books', 'BookController', [
             'only' => ['update', 'destroy']
         ]);
+        Route::resource('categories', 'CategoryController', [
+            'only' => ['store']
+        ]);
     });
 });

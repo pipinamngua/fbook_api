@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Contracts\Repositories\CategoryRepository;
+use App\Http\Requests\Api\Category\CreateCategoryRequest;
 
 class CategoryController extends ApiController
 {
@@ -15,6 +16,15 @@ class CategoryController extends ApiController
     {
         return $this->getData(function() {
             $this->compacts['items'] = $this->repository->getData();
+        });
+    }
+
+    public function store(CreateCategoryRequest $request)
+    {
+        $data = $request->only(['name', 'description']);
+
+        return $this->doAction(function() use ($data) {
+            $this->compacts['items'] = $this->repository->store($data);
         });
     }
 }

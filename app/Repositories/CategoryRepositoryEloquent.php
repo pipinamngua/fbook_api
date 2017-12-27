@@ -21,4 +21,9 @@ class CategoryRepositoryEloquent extends AbstractRepositoryEloquent implements C
 
         return $categories;
     }
+
+    public function store(array $data)
+    {
+        return $this->model()->create($data);
+    }
 }
