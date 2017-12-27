@@ -66,4 +66,11 @@ class CategoryController extends ApiController
             $this->compacts['items'] = $this->reFormatPaginate($data);
         });
     }
+
+    public function show($categoryId)
+    {
+        $this->compacts['item'] = $this->repository->show($categoryId);
+
+        return $this->jsonRender();
+    }
 }
