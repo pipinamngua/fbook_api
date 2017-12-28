@@ -39,4 +39,9 @@ class CategoryRepositoryEloquent extends AbstractRepositoryEloquent implements C
 
         return $result;
     }
+
+    public function countRecord()
+    {
+        return $this->model()->count();
+    }
 }

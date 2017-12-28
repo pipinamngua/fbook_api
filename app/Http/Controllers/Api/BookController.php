@@ -391,4 +391,11 @@ class BookController extends ApiController
             ];
         });
     }
+
+    public function getTotalBook()
+    {
+        return $this->getData(function() {
+            $this->compacts['item'] = $this->repository->countRecord();
+        });
+    }
 }
