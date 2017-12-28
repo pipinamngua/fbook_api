@@ -92,7 +92,7 @@ class BookController extends ApiController
             }
         ];
 
-        return $this->getData(function() use ($relations, $field, $officeId) {
+        return $this->getData(function () use ($relations, $field, $officeId) {
             $data = $this->repository->getBooksByFields($relations, $this->select, $field, [], $officeId);
 
             $this->compacts['items'] = $this->reFormatPaginate($data);
@@ -110,7 +110,7 @@ class BookController extends ApiController
     {
         $data = $request->all();
 
-        return $this->doAction(function() use ($data, $mediaRepository) {
+        return $this->doAction(function () use ($data, $mediaRepository) {
             $this->compacts['item'] = $this->repository->store($data, $mediaRepository);
         });
     }
@@ -119,7 +119,7 @@ class BookController extends ApiController
     {
         $data = $request->all();
 
-        return $this->doAction(function() use ($data, $id, $mediaRepository) {
+        return $this->doAction(function () use ($data, $id, $mediaRepository) {
             $book = $this->repository->findOrFail($id);
             $this->before('update', $book);
 
@@ -129,7 +129,7 @@ class BookController extends ApiController
 
     public function approveRequestUpdate(Request $request, $updateBookId)
     {
-        return $this->doAction(function() use ($updateBookId) {
+        return $this->doAction(function () use ($updateBookId) {
 
             $this->repository->approveRequestUpdateBook($updateBookId);
         }, __FUNCTION__);
@@ -137,7 +137,7 @@ class BookController extends ApiController
 
     public function deleteRequestUpdate($updateBookId)
     {
-        return $this->doAction(function() use ($updateBookId) {
+        return $this->doAction(function () use ($updateBookId) {
 
             $this->repository->deleteRequestUpdateBook($updateBookId);
         }, __FUNCTION__);
@@ -145,7 +145,7 @@ class BookController extends ApiController
 
     public function increaseView($id)
     {
-        return $this->doAction(function() use ($id) {
+        return $this->doAction(function () use ($id) {
             $book = $this->repository->findOrFail($id);
 
             $this->repository->increaseView($book);
@@ -154,7 +154,7 @@ class BookController extends ApiController
 
     public function destroy($id)
     {
-        return $this->doAction(function() use ($id) {
+        return $this->doAction(function () use ($id) {
             $book = $this->repository->findOrFail($id);
             $this->before('delete', $book);
 
@@ -167,7 +167,7 @@ class BookController extends ApiController
         $data = $request->all();
         $officeId = $request->get('office_id');
 
-        return $this->getData(function() use($data, $officeId) {
+        return $this->getData(function () use ($data, $officeId) {
             $this->compacts['items'] = $this->reFormatPaginate(
                 $this->repository->getDataSearch($data, ['image', 'category', 'office', 'owners'], $this->select, $officeId)
             );
@@ -178,7 +178,7 @@ class BookController extends ApiController
     {
         $data = $request->all();
 
-        return $this->doAction(function() use ($data) {
+        return $this->doAction(function () use ($data) {
             $book = $this->repository->findOrfail($data['item']['book_id']);
 
             $this->repository->booking($book, $data);
@@ -207,9 +207,16 @@ class BookController extends ApiController
     public function review(ReviewRequest $request, $bookId)
     {
         $data = $request->item;
-
-        return $this->doAction(function() use ($bookId, $data) {
+        return $this->doAction(function () use ($bookId, $data) {
             $this->repository->review($bookId, $data);
+        });
+    }
+
+    public function reviewNew(ReviewRequest $request, $bookId)
+    {
+        $data = $request->item;
+        return $this->doAction(function () use ($bookId, $data) {
+            $this->repository->reviewNew($bookId, $data);
         });
     }
 
@@ -235,7 +242,7 @@ class BookController extends ApiController
             }
         ];
 
-        return $this->getData(function() use ($relations, $field, $input, $officeId) {
+        return $this->getData(function () use ($relations, $field, $input, $officeId) {
             $data = $this->repository->getBooksByFields($relations, $this->select, $field, $input, $officeId);
 
             $this->compacts['items'] = $this->reFormatPaginate($data);
@@ -263,7 +270,7 @@ class BookController extends ApiController
             }
         ];
 
-        return $this->getData(function() use ($relations, $category, $officeId) {
+        return $this->getData(function () use ($relations, $category, $officeId) {
             $bookCategory = $this->repository->getBookByCategory($category->id, $this->select, $relations, $officeId);
             $currentPage = $bookCategory->currentPage();
 
@@ -305,7 +312,7 @@ class BookController extends ApiController
             }
         ];
 
-        return $this->getData(function() use ($relations, $category, $input, $officeId) {
+        return $this->getData(function () use ($relations, $category, $input, $officeId) {
             $bookCategory = $this->repository->getBookFilteredByCategory($category->id, $input, $this->select, $relations, $officeId);
             $currentPage = $bookCategory->currentPage();
 
@@ -326,14 +333,14 @@ class BookController extends ApiController
 
     public function addOwner($id)
     {
-        return $this->requestAction(function() use ($id) {
+        return $this->requestAction(function () use ($id) {
             $this->repository->addOwner($id);
         });
     }
 
     public function removeOwner($id)
     {
-        return $this->doAction(function() use ($id) {
+        return $this->doAction(function () use ($id) {
             $book = $this->repository->findOrFail($id);
             $this->before('delete', $book);
 
@@ -345,7 +352,7 @@ class BookController extends ApiController
     {
         $data = $request->all();
 
-        return $this->doAction(function() use ($data, $mediaRepository) {
+        return $this->doAction(function () use ($data, $mediaRepository) {
             $book = $this->repository->findOrFail($data['book_id']);
             $this->before('update', $book);
 
@@ -373,7 +380,7 @@ class BookController extends ApiController
             }
         ];
 
-        return $this->getData(function() use ($relations, $office) {
+        return $this->getData(function () use ($relations, $office) {
             $bookOffice = $this->repository->getBookByOffice($office->id, $this->select, $relations);
             $currentPage = $bookOffice->currentPage();
 

@@ -25,7 +25,8 @@ class ReviewRequest extends AbstractRequest
     {
         return [
             'item' => 'required|array|max:3',
-            'item.content' => 'required|max:255',
+            'item.title' => 'required|max:100',
+            'item.content' => 'required',
             'item.star' => 'numeric|between:1,5',
         ];
     }
