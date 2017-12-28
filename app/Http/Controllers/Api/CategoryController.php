@@ -27,4 +27,15 @@ class CategoryController extends ApiController
             $this->compacts['items'] = $this->repository->store($data);
         });
     }
+
+    public function update(CreateCategoryRequest $request, $categoryId)
+    {
+        $data = $request->only(['name', 'description']);
+
+        return $this->doAction(function() use ($data, $categoryId) {
+            $category = $this->repository->findOrFail($categoryId);
+
+            $this->repository->update($categoryId, $data);
+        });
+    }
 }
