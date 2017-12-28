@@ -38,4 +38,11 @@ class CategoryController extends ApiController
             $this->repository->update($categoryId, $data);
         });
     }
+
+    public function getTotalCategory()
+    {
+        return $this->getData(function() {
+            $this->compacts['item'] = $this->repository->countRecord();
+        });
+    }
 }

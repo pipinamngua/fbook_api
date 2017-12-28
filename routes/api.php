@@ -83,5 +83,10 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::resource('categories', 'CategoryController', [
             'only' => ['store', 'update']
         ]);
+        Route::group(['prefix' => 'count'], function () {
+            Route::get('users', ['as' => 'users.count', 'uses' => 'UserController@getTotalUser']);
+            Route::get('books', ['as' => 'books.count', 'uses' => 'BookController@getTotalBook']);
+            Route::get('categories', ['as' => 'categories.count', 'uses' => 'CategoryController@getTotalCategory']);
+        });
     });
 });

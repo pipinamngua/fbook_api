@@ -383,4 +383,9 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
             ->orderBy('created_at', 'ASC')
             ->paginate(config('paginate.default'));
     }
+
+    public function countRecord()
+    {
+        return $this->model()->count();
+    }
 }

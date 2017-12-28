@@ -217,4 +217,11 @@ class UserController extends ApiController
             $this->compacts['item'] = $this->repository->getWaitingApproveEditBook($this->updateBookSelect);
         });
     }
+
+    public function getTotalUser()
+    {
+        return $this->getData(function() {
+            $this->compacts['item'] = $this->repository->countRecord();
+        });
+    }
 }

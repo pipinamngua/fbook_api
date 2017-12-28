@@ -910,4 +910,9 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
         $updateBook->delete();
     }
+
+    public function countRecord()
+    {
+        return $this->model()->count();
+    }
 }
