@@ -45,4 +45,13 @@ class CategoryController extends ApiController
             $this->compacts['item'] = $this->repository->countRecord();
         });
     }
+
+    public function getCategoryByPage()
+    {
+        return $this->getData(function() {
+            $data = $this->repository->getByPage();
+
+            $this->compacts['items'] = $this->reFormatPaginate($data);
+        });
+    }
 }

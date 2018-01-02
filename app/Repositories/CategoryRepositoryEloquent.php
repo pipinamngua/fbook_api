@@ -44,4 +44,12 @@ class CategoryRepositoryEloquent extends AbstractRepositoryEloquent implements C
     {
         return $this->model()->count();
     }
+
+    public function getByPage( $limit = '')
+    {
+        return $this->model()
+            ->withCount('books')
+            ->latest()
+            ->paginate($limit ?: config('paginate.default'));
+    }
 }
