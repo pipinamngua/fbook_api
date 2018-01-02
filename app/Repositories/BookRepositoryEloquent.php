@@ -383,6 +383,41 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         }
     }
 
+    public function reviewNew($bookId, array $data)
+    {
+        $book = $this->model()->findOrFail($bookId);
+        $dataReview = array_only($data, ['title','content', 'star']);
+        $dataReview['created_at'] = $dataReview['updated_at'] = Carbon::now();
+
+        $book->reviews()->detach($this->user->id);
+        $book->reviews()->attach([
+            $this->user->id => $dataReview
+        ]);
+        $ownersId = $book->owners()->pluck('id');
+        if (isset($dataReview['star'])) {
+            Event::fire('books.averageStar', [
+                [
+                    'book' => $book,
+                    'star' => $dataReview['star'],
+                ]
+            ]);
+
+            foreach ($ownersId as $ownerId) {
+                Event::fire('androidNotification', config('model.notification.review'));
+                $message = '' . $this->user->name . ' reviewed book: ' . $book->title;
+                event(new NotificationHandler($message, $ownerId, config('model.notification.review')));
+                Event::fire('notification', [
+                    [
+                        'current_user_id' => $this->user->id,
+                        'get_user_id' => $ownerId,
+                        'target_id' => $book->id,
+                        'type' => config('model.notification.review'),
+                    ]
+                ]);
+            }
+        }
+    }
+
     protected function getDataInput($attribute = [])
     {
         $sort = [

@@ -33,15 +33,18 @@ class BooksTableSeeder extends Seeder
                 $star = $faker->numberBetween(1, 5);
 
                 $book->users()->attach($userId, [
-                    'status' =>  $faker->randomElement(config('model.book_user.status')),
+                    'status' => $faker->randomElement(config('model.book_user.status')),
                     'owner_id' => $faker->randomElement($ownerIds),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
 
                 $book->reviews()->attach($userId, [
-                    'content' => $faker->text(200),
+                    'title' => $faker->text($maxNbChars = 100),
+                    'content' => $faker->text(500),
                     'star' => $star,
+                    'up_vote' => $faker->numberBetween($min = 0, $max = 20),
+                    'down_vote' => $faker->numberBetween($min = 0, $max = 20),
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);

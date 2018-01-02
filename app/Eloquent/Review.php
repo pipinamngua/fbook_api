@@ -9,8 +9,11 @@ class Review extends Model
     protected $table = 'reviews';
 
     protected $fillable = [
+        'title',
         'content',
-        'star'
+        'star' .
+        'up_vote',
+        'down_vote'
     ];
 
     protected $hidden = ['user_id', 'book_id', 'owner_id', 'updated_at'];
