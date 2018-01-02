@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Contracts\Repositories\CategoryRepository;
 use App\Http\Requests\Api\Category\CreateCategoryRequest;
+use App\Http\Requests\Api\Category\SearchRequest;
 
 class CategoryController extends ApiController
 {
@@ -50,6 +51,17 @@ class CategoryController extends ApiController
     {
         return $this->getData(function() {
             $data = $this->repository->getByPage();
+
+            $this->compacts['items'] = $this->reFormatPaginate($data);
+        });
+    }
+
+    public function searchCategoryByName(SearchRequest $request)
+    {
+        $data = $request->only(['key', 'page']);
+
+        return $this->getData(function() use ($data) {
+            $data = $this->repository->searchByName($data);
 
             $this->compacts['items'] = $this->reFormatPaginate($data);
         });

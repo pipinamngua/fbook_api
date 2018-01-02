@@ -90,5 +90,6 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
             Route::get('books', ['as' => 'books.count', 'uses' => 'BookController@getTotalBook']);
             Route::get('categories', ['as' => 'categories.count', 'uses' => 'CategoryController@getTotalCategory']);
         });
+        Route::post('categories/search', ['as' => 'categories.search', 'uses' => 'CategoryController@searchCategoryByName']);
     });
 });
