@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\Repositories\CategoryRepository;
 use App\Eloquent\Category;
+use Illuminate\Pagination\Paginator;
 
 class CategoryRepositoryEloquent extends AbstractRepositoryEloquent implements CategoryRepository
 {
@@ -49,6 +50,18 @@ class CategoryRepositoryEloquent extends AbstractRepositoryEloquent implements C
     {
         return $this->model()
             ->withCount('books')
+            ->latest()
+            ->paginate($limit ?: config('paginate.default'));
+    }
+
+    public function searchByName(array $data, $limit = '')
+    {
+        Paginator::currentPageResolver(function() use ($data) {
+            return $data['page'];
+        });
+
+        return $this->model()
+            ->where('name', 'like', '%' . $data['key'] . '%')
             ->latest()
             ->paginate($limit ?: config('paginate.default'));
     }
