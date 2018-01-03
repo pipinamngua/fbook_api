@@ -82,9 +82,10 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
             'only' => ['update', 'destroy']
         ]);
         Route::resource('categories', 'CategoryController', [
-            'only' => ['store', 'update', 'show']
+            'only' => ['store', 'update']
         ]);
         Route::get('categories/all', 'CategoryController@getCategoryByPage');
+        Route::get('categories/detail/{id}', 'CategoryController@show');
         Route::group(['prefix' => 'count'], function () {
             Route::get('users', ['as' => 'users.count', 'uses' => 'UserController@getTotalUser']);
             Route::get('books', ['as' => 'books.count', 'uses' => 'BookController@getTotalBook']);
