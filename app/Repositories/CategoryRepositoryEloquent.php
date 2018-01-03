@@ -65,4 +65,9 @@ class CategoryRepositoryEloquent extends AbstractRepositoryEloquent implements C
             ->latest()
             ->paginate($limit ?: config('paginate.default'));
     }
+
+    public function show($categoryId)
+    {
+        return $this->model()->findOrFail($categoryId);
+    }
 }
