@@ -27,6 +27,10 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Contracts\Repositories\MediaRepository::class,
             \App\Repositories\MediaRepositoryEloquent::class,
         ],
+        'review' => [
+            \App\Contracts\Repositories\ReviewRepository::class,
+            \App\Repositories\ReviewRepositoryEloquent::class,
+        ]
     ];
 
     /**

@@ -58,6 +58,8 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::post('books/booking', ['as' => 'books.booking', 'uses' => 'BookController@booking']);
         Route::post('books/approve/{book_id}', ['as' => 'books.approve', 'uses' => 'BookController@approve']);
         Route::get('users/books/owned', ['as' => 'users.books.owned', 'uses' => 'UserController@ownedBooks']);
+        Route::delete('reviews/delete/{id}', ['as' => 'users.review.delete', 
+            'uses' => 'ReviewController@delete']);
         Route::resource('books', 'BookController', [
             'only' => ['store']
         ]);
