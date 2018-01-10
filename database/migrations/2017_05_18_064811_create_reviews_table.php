@@ -19,11 +19,8 @@ class CreateReviewsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->integer('book_id')->unsigned()->index();
             $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade');
-            $table->string('title');
-            $table->longText('content');
+            $table->string('content');
             $table->integer('star')->default(0);
-            $table->integer('up_vote')->default(0);
-            $table->integer('down_vote')->default(0);
             $table->timestamps();
         });
     }

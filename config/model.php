@@ -102,4 +102,13 @@ return [
             'delete_request_update_book' => 'delete_edit_book',
         ],
     ],
+    'review_messeges' => [
+        'can_not_vote' => 'can_not_vote',
+        'revote_success' => 'revote_success',
+        'vote_success' => 'vote_success'
+    ],
+    'request_vote' => [
+        'up_vote' => 2,
+        'down_vote' => 1
+    ]
 ];
