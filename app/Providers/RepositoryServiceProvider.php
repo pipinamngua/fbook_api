@@ -30,6 +30,10 @@ class RepositoryServiceProvider extends ServiceProvider
         'review' => [
             \App\Contracts\Repositories\ReviewRepository::class,
             \App\Repositories\ReviewRepositoryEloquent::class,
+        ],
+         'comment' => [
+            \App\Contracts\Repositories\VoteRepository::class,
+            \App\Repositories\VoteRepositoryEloquent::class,
         ]
     ];
 

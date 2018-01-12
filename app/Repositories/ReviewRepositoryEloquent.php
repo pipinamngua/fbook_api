@@ -12,15 +12,34 @@ class ReviewRepositoryEloquent extends AbstractRepositoryEloquent implements Rev
         return new Review;
     }
 
-    public function delete($reviewId){
+    public function delete($reviewId)
+    {
         return $this->model()->destroy($reviewId);
     }
 
-    public function upVote($reviewId){
-
+    public function reviewDetails($reviewId, $userId)
+    {
+        return $this->model()->findOrFail($reviewId);
     }
 
-    public function downVote($reviewId){
+    public function vote($userId, $reviewId, $status)
+    {
 
+        $check = $this->model()->where([
+            ['user_id', '=', $userId],
+            ['review_id', '=', $reviewId],
+        ])->first();
+
+        return $check;
+    }
+
+    public function increaseVote($reviewId)
+    {
+        return $this->model()->where('id', $reviewId)->increment('up_vote', 1);
+    }
+
+    public function decreaseVote($reviewId)
+    {
+        return $this->model()->where('id', $reviewId)->increment('down_vote', 1);
     }
 }

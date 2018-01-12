@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
-    protected $table = 'reviews';
-
     protected $fillable = [
         'title',
         'content',
@@ -26,5 +24,10 @@ class Review extends Model
     public function book()
     {
         return $this->belongsTo(Book::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }
