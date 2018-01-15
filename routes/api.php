@@ -58,13 +58,13 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::post('books/booking', ['as' => 'books.booking', 'uses' => 'BookController@booking']);
         Route::post('books/approve/{book_id}', ['as' => 'books.approve', 'uses' => 'BookController@approve']);
         Route::get('users/books/owned', ['as' => 'users.books.owned', 'uses' => 'UserController@ownedBooks']);
-        Route::delete('reviews/delete/{id}', ['as' => 'users.review.delete', 
+        Route::delete('reviews/delete/{id}', ['as' => 'users.review.delete',
             'uses' => 'ReviewController@delete']);
-        Route::get('books/review-details/{revieId}/{userId}', ['as' => 'books.review.detail', 
+        Route::get('books/review-details/{revieId}/{userId}', ['as' => 'books.review.detail',
             'uses' => 'ReviewController@reviewDetails']);
-        
+        Route::post('books/review-details/comment', ['as' => 'books.review.comment',
+             'uses' => 'ReviewController@commentReview']);
         Route::post('books/vote', ['as' => 'books.review.vote', 'uses' => 'ReviewController@vote']);
-
         Route::resource('books', 'BookController', [
             'only' => ['store']
         ]);

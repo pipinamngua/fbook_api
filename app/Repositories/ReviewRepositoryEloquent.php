@@ -42,4 +42,15 @@ class ReviewRepositoryEloquent extends AbstractRepositoryEloquent implements Rev
     {
         return $this->model()->where('id', $reviewId)->increment('down_vote', 1);
     }
+
+    public function newComment($data)
+    {
+        return $this->model()->findOrFail($data['item']['reviewId'])->comments()->create(
+            [
+                'user_id' => $data['item']['userId'],
+                'review_id' => $data['item']['reviewId'],
+                'content' => $data['item']['content'],
+            ]
+        );
+    }
 }
