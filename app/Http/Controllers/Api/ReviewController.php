@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Contracts\Repositories\ReviewRepository;
 use App\Contracts\Repositories\VoteRepository;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\Book\CommentRequest;
 
 class ReviewController extends ApiController
 {
@@ -26,7 +27,7 @@ class ReviewController extends ApiController
         return $this->doAction(function () use ($voteRepository, $reviewId, $userId) {
             $review = $this->repository->reviewDetails($reviewId, $userId);
             $currentUser = $voteRepository->checkUserVoted($userId, $reviewId);
-            
+
             $userVoted = $currentUser ? $currentUser : null;
             $comments = [];
             foreach ($review->comments as $comment) {
@@ -63,16 +64,12 @@ class ReviewController extends ApiController
                     ];
                 } else {
                     $voteRepository->changeStatus($request->userId, $request->reviewId, $request->status);
-
                     if ($request->status == config('model.request_vote.up_vote')) {
                         $this->repository->increaseVote($request->reviewId);
                     } else {
                         $this->repository->decreaseVote($request->reviewId);
                     }
-
-                    $this->compacts['items'] = [
-                            'messages' => config('model.review_messeges.revote_success')
-                        ];
+                    $this->compacts['items'] = [ 'messages' => config('model.review_messeges.revote_success')];
                 }
             } else {
                 $voteRepository->addNewVote($request->userId, $request->reviewId, $request->status);
@@ -86,6 +83,13 @@ class ReviewController extends ApiController
                 ];
             }
 
+        }, __FUNCTION__);
+    }
+
+    public function commentReview(CommentRequest $request)
+    {
+        return $this->doAction(function () use ($request) {
+            $this->repository->newComment($request->all());
         }, __FUNCTION__);
     }
 }
