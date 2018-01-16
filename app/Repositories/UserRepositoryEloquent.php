@@ -12,6 +12,7 @@ use App\Eloquent\UserFollow;
 use App\Eloquent\Notification;
 use Illuminate\Support\Facades\Event;
 use Carbon\Carbon;
+use Illuminate\Pagination\Paginator;
 
 class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserRepository
 {
@@ -393,6 +394,27 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
     {
         return $this->model()
             ->select($dataSelect)
+            ->with(array_merge($withRelation, ['office']))
+            ->withCount('owners')
+            ->orderBy('created_at', 'ASC')
+            ->paginate(config('paginate.default'));
+    }
+
+    public function search($data, $dataSelect = ['*'], $withRelation = [])
+    {
+        Paginator::currentPageResolver(function() use ($data) {
+            return $data['page'];
+        });
+
+        if ($data['type'] == config('model.filter_user.by_email')) {
+            $query = $this->model()
+                ->where('email', 'like', '%' . $data['key'] . '%');
+        } else {
+            $query = $this->model()
+                ->where('employee_code', 'like', '%' . $data['key'] . '%');
+        }
+
+        return $query->select($dataSelect)
             ->with(array_merge($withRelation, ['office']))
             ->withCount('owners')
             ->orderBy('created_at', 'ASC')
