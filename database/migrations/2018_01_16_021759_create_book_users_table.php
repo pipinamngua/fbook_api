@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateOwnersTable extends Migration
+class CreateBookUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,16 @@ class CreateOwnersTable extends Migration
      */
     public function up()
     {
-        Schema::create('owners', function (Blueprint $table) {
+        Schema::create('book_user', function (Blueprint $table) {
             $table->integer('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->integer('book_id')->unsigned()->index();
             $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade');
-            $table->float('avg_star')->default(0);
+            $table->smallInteger('status')->unsigned()->nullable();
+            $table->char('type',20)->nullable();
+            $table->integer('owner_id')->unsigned()->nullable()->index();
+            $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
+            $table->integer('days_to_read')->unsigned()->default(config('settings.default_days_to_read'));
             $table->timestamps();
         });
     }
@@ -30,6 +34,6 @@ class CreateOwnersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('owners');
+        Schema::dropIfExists('book_user');
     }
 }

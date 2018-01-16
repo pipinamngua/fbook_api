@@ -15,8 +15,9 @@ class CreateNotificationsTable extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned()->index();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->integer('user_send_id')->unsigned()->index();
+            $table->foreign('user_send_id')->references('id')->on('users')->onDelete('cascade');
+            $table->integer('user_receive_id')->unsigned()->index();
             $table->integer('target_id')->index();
             $table->boolean('viewed')->default(false);
             $table->char('type', 20)->nullable();
