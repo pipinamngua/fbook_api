@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Eloquent\Category;
+use App\Eloquent\Notification;
 
 class UserTest extends TestCase
 {
@@ -492,6 +493,61 @@ class UserTest extends TestCase
         $headers = $this->getFauthHeaders();
 
         $response = $this->call('GET', route('api.v0.users.follow.info', 'xxx'), [], [], [], $headers);
+        $response->assertJsonStructure([
+            'message' => [
+                'status', 'code', 'description'
+            ],
+        ])->assertJson([
+            'message' => [
+                'status' => false,
+                'code' => 404,
+            ]
+        ])->assertStatus(404);
+    }
+
+    public function testUpdateViewNotificationsSuccsess()
+    {
+        $headers = $this->getFauthHeaders();
+        $notification = factory(Notification::class)->create();
+
+        $response = $this->call('GET', route('api.v0.notification.update', $notification->id), [], [], [], $headers);
+
+        $response->assertJsonStructure([
+            'message' => [
+                'status', 'code',
+            ],
+        ])->assertJson([
+            'message' => [
+                'status' => true,
+                'code' => 200,
+            ]
+        ])->assertStatus(200);
+    }
+
+    public function testUpdateViewNotificationsWithGuest()
+    {
+        $headers = $this->getHeaders();
+        $notification = factory(Notification::class)->create();
+
+        $response = $this->call('GET', route('api.v0.notification.update', $notification->id), [], [], [], $headers);
+
+        $response->assertJsonStructure([
+            'message' => [
+                'status', 'code', 'description'
+            ],
+        ])->assertJson([
+            'message' => [
+                'status' => false,
+                'code' => 401,
+            ]
+        ])->assertStatus(401);
+    }
+
+    public function testUpdateViewNotificationsWithInvalidNotificationId()
+    {
+        $headers = $this->getFauthHeaders();
+
+        $response = $this->call('GET', route('api.v0.notification.update', 'xxx'), [], [], [], $headers);
         $response->assertJsonStructure([
             'message' => [
                 'status', 'code', 'description'

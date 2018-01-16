@@ -158,7 +158,7 @@ class BookTest extends TestCase
     public function testShowBooksSuccess()
     {
         $headers = $this->getHeaders();
-        $book = Book::first();
+        $book = factory(Book::class)->create();
 
         $response = $this->call('GET', route('api.v0.books.show', $book->id), [], [], [], $headers);
         $response->assertJsonStructure([

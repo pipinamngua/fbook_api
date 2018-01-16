@@ -108,7 +108,8 @@ class User extends Authenticatable
 
     public function getJoinDateAttribute()
     {
-        return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)
-            ->format('d/m/Y');
+        if ($this->created_at) {
+            return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->format('d/m/Y');
+        }
     }
 }

@@ -75,3 +75,16 @@ $factory->define(App\Eloquent\Suggestion::class, function (Faker\Generator $fake
         'category_id' => $faker->randomElement($categoryId ?: $categoryId = \App\Eloquent\Category::pluck('id')->toArray()),
     ];
 });
+
+$factory->define(App\Eloquent\Notification::class, function (Faker\Generator $faker) {
+    static $userSendId;
+    static $userReceiveId;
+    static $targetId;
+
+    return [
+        'user_send_id' => $faker->randomElement($userSendId ?: $userSendId = \App\Eloquent\User::pluck('id')->toArray()),
+        'user_receive_id' => $faker->randomElement($userReceiveId ?: $userReceiveId = \App\Eloquent\User::pluck('id')->toArray()),
+        'target_id' => $faker->randomElement($targetId ?: $targetId = \App\Eloquent\Book::pluck('id')->toArray()),
+        'type' => config('model.notification.waiting'),
+    ];
+});
