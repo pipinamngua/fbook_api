@@ -39,6 +39,10 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    protected $appends = [
+        'join_date'
+    ];
+
     public function setPasswordAttribute($value)
     {
         if ($value) {
@@ -100,5 +104,11 @@ class User extends Authenticatable
     public function isOwnerBook($bookId)
     {
         return $this->owners()->where('book_id', $bookId)->count() !== 0;
+    }
+
+    public function getJoinDateAttribute()
+    {
+        return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)
+            ->format('d/m/Y');
     }
 }

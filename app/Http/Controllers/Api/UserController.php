@@ -224,4 +224,13 @@ class UserController extends ApiController
             $this->compacts['item'] = $this->repository->countRecord();
         });
     }
+
+    public function getUserList()
+    {
+        return $this->getData(function() {
+            $data = $this->repository->getByPage();
+
+            $this->compacts['items'] = $this->reFormatPaginate($data);
+        });
+    }
 }
