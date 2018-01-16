@@ -559,4 +559,76 @@ class UserTest extends TestCase
             ]
         ])->assertStatus(404);
     }
+
+    public function testGetCountNotificationsSuccsess()
+    {
+        $headers = $this->getFauthHeaders();
+
+        $response = $this->call('GET', route('api.v0.notifications.count'), [], [], [], $headers);
+
+        $response->assertJsonStructure([
+            'message' => [
+                'status', 'code',
+            ],
+        ])->assertJson([
+            'message' => [
+                'status' => true,
+                'code' => 200,
+            ]
+        ])->assertStatus(200);
+    }
+
+    public function testGetCountNotificationsWithGuest()
+    {
+        $headers = $this->getHeaders();
+
+        $response = $this->call('GET', route('api.v0.notifications.count'), [], [], [], $headers);
+
+        $response->assertJsonStructure([
+            'message' => [
+                'status', 'code', 'description'
+            ],
+        ])->assertJson([
+            'message' => [
+                'status' => false,
+                'code' => 401,
+            ]
+        ])->assertStatus(401);
+    }
+
+    public function testGetNotificationsSuccsess()
+    {
+        $headers = $this->getFauthHeaders();
+
+        $response = $this->call('GET', route('api.v0.users.notifications'), [], [], [], $headers);
+
+        $response->assertJsonStructure([
+            'message' => [
+                'status', 'code',
+            ],
+        ])->assertJson([
+            'message' => [
+                'status' => true,
+                'code' => 200,
+            ]
+        ])->assertStatus(200);
+    }
+
+    public function testGetNotificationsWithGuest()
+    {
+        $headers = $this->getHeaders();
+
+        $response = $this->call('GET', route('api.v0.users.notifications'), [], [], [], $headers);
+
+        $response->assertJsonStructure([
+            'message' => [
+                'status', 'code', 'description'
+            ],
+        ])->assertJson([
+            'message' => [
+                'status' => false,
+                'code' => 401,
+            ]
+        ])->assertStatus(401);
+    }
 }
