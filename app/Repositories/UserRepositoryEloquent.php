@@ -388,4 +388,14 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
     {
         return $this->model()->count();
     }
+
+    public function getByPage($dataSelect = ['*'], $withRelation = [])
+    {
+        return $this->model()
+            ->select($dataSelect)
+            ->with(array_merge($withRelation, ['office']))
+            ->withCount('owners')
+            ->orderBy('created_at', 'ASC')
+            ->paginate(config('paginate.default'));
+    }
 }
