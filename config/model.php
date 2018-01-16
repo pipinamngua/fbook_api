@@ -110,5 +110,9 @@ return [
     'request_vote' => [
         'up_vote' => 2,
         'down_vote' => 1
-    ]
+    ],
+    'filter_user' => [
+        'by_staff_code' => 1,
+        'by_email' => 2
+    ],
 ];

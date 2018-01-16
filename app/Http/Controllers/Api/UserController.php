@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Contracts\Repositories\UserRepository;
 use App\Exceptions\Api\ActionException;
 use App\Http\Requests\Api\User\AddTagsRequest;
+use App\Http\Requests\Api\User\SearchUserRequest;
 use App\Http\Requests\Api\Follow\FollowRequest;
 
 class UserController extends ApiController
@@ -229,6 +230,17 @@ class UserController extends ApiController
     {
         return $this->getData(function() {
             $data = $this->repository->getByPage();
+
+            $this->compacts['items'] = $this->reFormatPaginate($data);
+        });
+    }
+
+    public function searchUser(SearchUserRequest $request)
+    {
+        $data = $request->only(['key', 'type', 'page']);
+
+        return $this->getData(function() use ($data) {
+            $data = $this->repository->search($data);
 
             $this->compacts['items'] = $this->reFormatPaginate($data);
         });
