@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUpdateMediasTable extends Migration
+class CreateUpdateMediaTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateUpdateMediasTable extends Migration
      */
     public function up()
     {
-        Schema::create('update_medias', function (Blueprint $table) {
+        Schema::create('update_media', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('update_book_id')->unsigned();
             $table->foreign('update_book_id')->references('id')->on('update_books')->onDelete('cascade');
@@ -35,6 +35,6 @@ class CreateUpdateMediasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('update_medias');
+        Schema::dropIfExists('update_media');
     }
 }

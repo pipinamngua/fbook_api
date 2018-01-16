@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUpdateBooksTable extends Migration
+class CreateBooksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,20 @@ class CreateUpdateBooksTable extends Migration
      */
     public function up()
     {
-        Schema::create('update_books', function (Blueprint $table) {
+        Schema::create('books', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->integer('book_id')->unsigned();
-            $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('author', 100)->nullable();
-            $table->dateTime('publish_date')->nullable();
+            $table->date('publish_date')->nullable();
+            $table->integer('total_page')->nullable();
+            $table->float('avg_star')->default(0);
+            $table->string('code', 100)->unique();
+            $table->integer('count_view')->default(0);
             $table->integer('category_id')->unsigned()->index();
             $table->integer('office_id')->unsigned()->index();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -36,6 +37,6 @@ class CreateUpdateBooksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('update_books');
+        Schema::dropIfExists('books');
     }
 }
