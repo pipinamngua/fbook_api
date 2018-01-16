@@ -41,7 +41,7 @@ class BooksTableSeeder extends Seeder
 
                 $book->reviews()->attach($userId, [
                     'title' => $faker->text($maxNbChars = 100),
-                    'content' => $faker->text(500),
+                    'content' => $faker->text(250),
                     'star' => $star,
                     'up_vote' => $faker->numberBetween($min = 0, $max = 20),
                     'down_vote' => $faker->numberBetween($min = 0, $max = 20),
