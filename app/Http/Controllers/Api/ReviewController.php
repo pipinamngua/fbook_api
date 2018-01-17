@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Contracts\Repositories\ReviewRepository;
+use App\Contracts\Repositories\CommentRepository;
 use App\Contracts\Repositories\VoteRepository;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\Book\CommentRequest;
@@ -69,7 +70,7 @@ class ReviewController extends ApiController
                     } else {
                         $this->repository->decreaseVote($request->reviewId);
                     }
-                    $this->compacts['items'] = [ 'messages' => config('model.review_messeges.revote_success')];
+                    $this->compacts['items'] = ['messages' => config('model.review_messeges.revote_success')];
                 }
             } else {
                 $voteRepository->addNewVote($request->userId, $request->reviewId, $request->status);
@@ -90,6 +91,13 @@ class ReviewController extends ApiController
     {
         return $this->doAction(function () use ($request) {
             $this->repository->newComment($request->all());
+        }, __FUNCTION__);
+    }
+
+    public function removeComment(CommentRepository $commentRepository, $commentId)
+    {
+        return $this->doAction(function () use ($commentRepository, $commentId) {
+            $commentRepository->removeComment($commentId);
         }, __FUNCTION__);
     }
 }

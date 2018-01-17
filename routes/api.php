@@ -65,6 +65,10 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::post('books/review-details/comment', ['as' => 'books.review.comment',
              'uses' => 'ReviewController@commentReview']);
         Route::post('books/vote', ['as' => 'books.review.vote', 'uses' => 'ReviewController@vote']);
+        Route::delete('books/review-details/remove-comment/{id}', [
+            'as' => 'books.review.remove.comment', 
+            'uses' => 'ReviewController@removeComment',
+        ]);
         Route::resource('books', 'BookController', [
             'only' => ['store']
         ]);
