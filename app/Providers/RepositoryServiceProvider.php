@@ -31,9 +31,13 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Contracts\Repositories\ReviewRepository::class,
             \App\Repositories\ReviewRepositoryEloquent::class,
         ],
-         'comment' => [
+         'vote' => [
             \App\Contracts\Repositories\VoteRepository::class,
             \App\Repositories\VoteRepositoryEloquent::class,
+        ],
+        'comment' => [
+            \App\Contracts\Repositories\CommentRepository::class,
+            \App\Repositories\CommentRepositoryEloquent::class,
         ]
     ];
 

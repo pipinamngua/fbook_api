@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UpdateMedia extends Model
 {
-    protected $table = 'update_medias';
+    protected $table = 'update_media';
     /**
      * The attributes that are mass assignable.
      *
