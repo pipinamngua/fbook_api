@@ -38,7 +38,12 @@ class RepositoryServiceProvider extends ServiceProvider
         'comment' => [
             \App\Contracts\Repositories\CommentRepository::class,
             \App\Repositories\CommentRepositoryEloquent::class,
-        ]
+        ],
+        'owner' => [
+            \App\Contracts\Repositories\OwnerRepository::class,
+            \App\Repositories\OwnerRepositoryEloquent::class,
+        ],
+
     ];
 
     /**
