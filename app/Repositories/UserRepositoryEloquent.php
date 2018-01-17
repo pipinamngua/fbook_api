@@ -420,4 +420,15 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
             ->orderBy('created_at', 'ASC')
             ->paginate(config('paginate.default'));
     }
+
+    public function getDetail($userId)
+    {
+        return $this->model()
+            ->where('id', $userId)
+            ->with(['office'])
+            ->withCount('owners')
+            ->withCount('usersFollower')
+            ->withCount('usersFollowing')
+            ->first();
+    }
 }

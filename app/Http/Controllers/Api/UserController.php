@@ -245,4 +245,11 @@ class UserController extends ApiController
             $this->compacts['items'] = $this->reFormatPaginate($data);
         });
     }
+
+    public function getUserDetail($userId)
+    {
+        $this->compacts['item'] = $this->repository->getDetail($userId);
+
+        return $this->jsonRender();
+    }
 }
