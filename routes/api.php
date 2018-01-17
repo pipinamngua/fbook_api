@@ -99,7 +99,8 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::get('categories/detail/{id}', 'CategoryController@show');
         Route::group(['prefix' => 'count'], function () {
             Route::get('users', ['as' => 'users.count', 'uses' => 'UserController@getTotalUser']);
-            Route::get('books', ['as' => 'books.count', 'uses' => 'BookController@getTotalBook']);
+            Route::get('books/have-owner', 'OwnerController@countBookHaveOwner');
+            Route::get('owners/have-book', 'OwnerController@countOwnerHaveBook');
             Route::get('categories', ['as' => 'categories.count', 'uses' => 'CategoryController@getTotalCategory']);
         });
         Route::post('categories/search', ['as' => 'categories.search', 'uses' => 'CategoryController@searchCategoryByName']);
