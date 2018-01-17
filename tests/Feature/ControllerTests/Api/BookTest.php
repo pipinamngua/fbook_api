@@ -636,7 +636,7 @@ class BookTest extends TestCase
 
     /* TEST REQUEST UPDATE BOOKS */
 
-    public function testUpdateBookNotOwner()
+    public function testRequestUpdateBookNotOwner()
     {
         $headers = $this->getFauthHeaders();
         $bookId = factory(Book::class)->create()->id;
@@ -659,7 +659,7 @@ class BookTest extends TestCase
         ])->assertStatus(400);
     }
 
-    public function testUpdateBookWithFieldsNull()
+    public function testRequestUpdateBookWithFieldsNull()
     {
         $headers = $this->getFauthHeaders();
         $bookId = factory(Book::class)->create()->id;
@@ -677,7 +677,7 @@ class BookTest extends TestCase
         ])->assertStatus(422);
     }
 
-    public function testUpdateBookWithGuest()
+    public function testRequestUpdateBookWithGuest()
     {
         $headers = $this->getHeaders();
         $bookId = factory(Book::class)->create()->id;

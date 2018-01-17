@@ -631,4 +631,76 @@ class UserTest extends TestCase
             ]
         ])->assertStatus(401);
     }
+
+    public function testUpdateViewNotificationsAllSuccsess()
+    {
+        $headers = $this->getFauthHeaders();
+
+        $response = $this->call('POST', route('api.v0.notifications.update.all'), [], [], [], $headers);
+
+        $response->assertJsonStructure([
+            'message' => [
+                'status', 'code',
+            ],
+        ])->assertJson([
+            'message' => [
+                'status' => true,
+                'code' => 200,
+            ]
+        ])->assertStatus(200);
+    }
+
+    public function testupdateViewNotificationsAllWithGuest()
+    {
+        $headers = $this->getHeaders();
+
+        $response = $this->call('POST', route('api.v0.notifications.update.all'), [], [], [], $headers);
+
+        $response->assertJsonStructure([
+            'message' => [
+                'status', 'code', 'description'
+            ],
+        ])->assertJson([
+            'message' => [
+                'status' => false,
+                'code' => 401,
+            ]
+        ])->assertStatus(401);
+    }
+
+    public function testGetNotificationsDropdownSuccsess()
+    {
+        $headers = $this->getFauthHeaders();
+
+        $response = $this->call('GET', route('api.v0.users.notifications.dropdown'), [], [], [], $headers);
+
+        $response->assertJsonStructure([
+            'message' => [
+                'status', 'code',
+            ],
+        ])->assertJson([
+            'message' => [
+                'status' => true,
+                'code' => 200,
+            ]
+        ])->assertStatus(200);
+    }
+
+    public function testGetNotificationsDropdownWithGuest()
+    {
+        $headers = $this->getHeaders();
+
+        $response = $this->call('GET', route('api.v0.users.notifications.dropdown'), [], [], [], $headers);
+
+        $response->assertJsonStructure([
+            'message' => [
+                'status', 'code', 'description'
+            ],
+        ])->assertJson([
+            'message' => [
+                'status' => false,
+                'code' => 401,
+            ]
+        ])->assertStatus(401);
+    }
 }
