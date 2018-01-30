@@ -88,6 +88,8 @@ return [
         'add_owner' => 'add_owner',
         'remove_owner' => 'remove_owner',
         'review' => 'review',
+        'up_vote' => 'up_vote',
+        'down_vote' => 'down_vote',
         'waiting' => 'waiting',
         'cancel' =>' cancel',
         'returning' => 'returning',
@@ -105,7 +107,8 @@ return [
     'review_messeges' => [
         'can_not_vote' => 'can_not_vote',
         'revote_success' => 'revote_success',
-        'vote_success' => 'vote_success'
+        'vote_success' => 'vote_success',
+        'owner_can_not_vote' => 'owner_can_not_vote'
     ],
     'request_vote' => [
         'up_vote' => 2,

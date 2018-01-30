@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\Repositories\VoteRepository;
 use App\Eloquent\Vote;
+use App\Eloquent\Review;
 
 class VoteRepositoryEloquent extends AbstractRepositoryEloquent implements VoteRepository
 {
@@ -15,7 +16,6 @@ class VoteRepositoryEloquent extends AbstractRepositoryEloquent implements VoteR
 
     public function checkVoted($userId, $reviewId)
     {
-
         $check = $this->model()->where([
             ['user_id', '=', $userId],
             ['review_id', '=', $reviewId],
@@ -26,6 +26,10 @@ class VoteRepositoryEloquent extends AbstractRepositoryEloquent implements VoteR
 
     public function addNewVote($userId, $reviewId, $status)
     {
+        $review = Review::findOrFail($reviewId);
+        if ($review->user_id == $userId) {
+            return false;
+        }
         $this->model()->insert([
             [
                 'user_id' => $userId,
@@ -33,6 +37,8 @@ class VoteRepositoryEloquent extends AbstractRepositoryEloquent implements VoteR
                 'status' => $status
             ],
         ]);
+
+        return true;
     }
 
     public function changeStatus($userId, $reviewId, $status)
@@ -44,7 +50,7 @@ class VoteRepositoryEloquent extends AbstractRepositoryEloquent implements VoteR
     }
 
     public function checkUserVoted($userId, $reviewId){
-         $checkVoted = $this->model()->where([
+        $checkVoted = $this->model()->where([
             ['user_id', '=', $userId],
             ['review_id', '=', $reviewId],
         ])->first();
@@ -52,6 +58,7 @@ class VoteRepositoryEloquent extends AbstractRepositoryEloquent implements VoteR
         if ($checkVoted) {
             return $checkVoted->status;
         }
+
         return false;
     }
 }

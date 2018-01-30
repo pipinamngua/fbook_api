@@ -10,6 +10,8 @@ use App\Http\Requests\Api\Book\CommentRequest;
 
 class ReviewController extends ApiController
 {
+    const RE_VOTE_NUMBER = 2;
+
     public function __construct(ReviewRepository $repository)
     {
         parent::__construct($repository);
@@ -66,14 +68,19 @@ class ReviewController extends ApiController
                 } else {
                     $voteRepository->changeStatus($request->userId, $request->reviewId, $request->status);
                     if ($request->status == config('model.request_vote.up_vote')) {
-                        $this->repository->increaseVote($request->reviewId);
+                        $this->repository->increaseVote($request->reviewId, self::RE_VOTE_NUMBER);
                     } else {
-                        $this->repository->decreaseVote($request->reviewId);
+                        $this->repository->decreaseVote($request->reviewId, self::RE_VOTE_NUMBER);
                     }
                     $this->compacts['items'] = ['messages' => config('model.review_messeges.revote_success')];
                 }
             } else {
-                $voteRepository->addNewVote($request->userId, $request->reviewId, $request->status);
+                $voteCheck = $voteRepository->addNewVote($request->userId, $request->reviewId, $request->status);
+                if (!$voteCheck) {
+                    return $this->compacts['items'] = [
+                        'messages' => config('model.review_messeges.owner_can_not_vote')
+                    ];
+                }
                 if ($request->status == config('model.request_vote.up_vote')) {
                     $this->repository->increaseVote($request->reviewId);
                 } else {

@@ -26,7 +26,7 @@ class NotificationHandler implements ShouldBroadcast
         $this->action = $action;
     }
 
-    public  function broadcastOn()
+    public function broadcastOn()
     {
         return new Channel('channel_notification');
     }

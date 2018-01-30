@@ -4,6 +4,10 @@ namespace App\Repositories;
 
 use App\Contracts\Repositories\ReviewRepository;
 use App\Eloquent\Review;
+use App\Eloquent\Notification;
+use Illuminate\Support\Facades\Event;
+use App\Events\NotificationHandler;
+use Auth;
 
 class ReviewRepositoryEloquent extends AbstractRepositoryEloquent implements ReviewRepository
 {
@@ -33,14 +37,40 @@ class ReviewRepositoryEloquent extends AbstractRepositoryEloquent implements Rev
         return $check;
     }
 
-    public function increaseVote($reviewId)
+    public function increaseVote($reviewId, $voteNumber = 1)
     {
-        return $this->model()->where('id', $reviewId)->increment('up_vote', 1);
+        $review = Review::findOrFail($reviewId);
+        Event::fire('androidNotification', config('model.notification.up_vote'));
+        $message = trans('review.upvoted') . $this->user->name;
+        event(new NotificationHandler($message, $review->user_id, config('model.notification.up_vote')));
+        Event::fire('notification', [
+            [
+                'current_user_id' => $this->user->id,
+                'get_user_id' => $review->user_id,
+                'target_id' => $review->book->id,
+                'type' => config('model.notification.up_vote'),
+            ]
+        ]);
+
+        return $this->model()->where('id', $reviewId)->increment('up_vote', $voteNumber);
     }
 
-    public function decreaseVote($reviewId)
+    public function decreaseVote($reviewId, $voteNumber = 1)
     {
-        return $this->model()->where('id', $reviewId)->increment('down_vote', 1);
+        $review = Review::findOrFail($reviewId);
+        Event::fire('androidNotification', config('model.notification.down_vote'));
+        $message = trans('review.downvoted') . $this->user->name;
+        event(new NotificationHandler($message, $review->user_id, config('model.notification.down_vote')));
+        Event::fire('notification', [
+            [
+                'current_user_id' => $this->user->id,
+                'get_user_id' => $review->user_id,
+                'target_id' => $review->book->id,
+                'type' => config('model.notification.down_vote'),
+            ]
+        ]);
+
+        return $this->model()->where('id', $reviewId)->increment('down_vote', $voteNumber);
     }
 
     public function newComment($data)
