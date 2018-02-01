@@ -41,10 +41,24 @@
     "invalid": ":param is invalid value"
   },
   "title_key": {
-    "latest" : "Latest books",
-    "view" : "Top viewed books",
-    "rating" : "Top rating books",
-    "waiting" : "Top waiting books",
-    "read" : "Top read books"
+    "latest": "Latest books",
+    "view": "Top viewed books",
+    "rating": "Top rating books",
+    "waiting": "Top waiting books",
+    "read": "Top read books"
+  },
+  "notification": {
+    "returing_book": "%s want to returing book: %s",
+    "cancel_book_borrowing": "%s cancel book borrowing: %s",
+    "cancel_book_waiting": "%s waiting book borrowing: %s",
+    "reviewed_book": "%s reviewed book: %s",
+    "accepted_book": "%s accepted book: %s",
+    "request_edit_book": "%s request edit book: %s",
+    "approve_request_update_book": "%s approve request update book: %s",
+    "delete_request_edit_book": "%s delete request edit book: %s"
+  },
+  "review": {
+    "upvoted": "Your review was upvoted by %s",
+    "downvoted": "Your review was downvoted by %s"
   }
 }

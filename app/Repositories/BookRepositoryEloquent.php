@@ -42,7 +42,6 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         return new \App\Eloquent\Book;
     }
-
     public function updateBookModel()
     {
         return new \App\Eloquent\UpdateBook;
@@ -273,7 +272,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     ]);
 
                 Event::fire('androidNotification', config('model.notification.returning'));
-                $message = '' . $this->user->name . ' want to returing book: ' . $book->title;
+                $message = sprintf(translate('notification.returing_book'), $this->user->name, $book->title);
                 event(new NotificationHandler($message, $ownerId, config('model.notification.returning')));
                 Event::fire('notification', [
                     [
@@ -292,7 +291,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     ->detach($this->user->id);
 
                 Event::fire('androidNotification', config('model.notification.cancel'));
-                $message = '' . $this->user->name . ' cancel book borrowing : ' . $book->title;
+                $message = sprintf(translate('notification.cancel_book_borrowing'), $this->user->name, $book->title);
                 event(new NotificationHandler($message, $ownerId, config('model.notification.cancel')));
                 Event::fire('notification', [
                     [
@@ -314,7 +313,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                 ]);
 
                 Event::fire('androidNotification', config('model.notification.waiting'));
-                $message = '' . $this->user->name . ' waiting to borrow book: ' . $book->title;
+                $message = sprintf(translate('notification.waiting_book_borrowing'), $this->user->name, $book->title);
                 event(new NotificationHandler($message, $ownerId, config('model.notification.waiting')));
                 Event::fire('notification', [
                     [
@@ -335,7 +334,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             ]);
 
             Event::fire('androidNotification', config('model.notification.waiting'));
-            $message = '' . $this->user->name . ' waiting to borrow book: ' . $book->title;
+            $message = sprintf(translate('notification.waiting_book_borrowing'), $this->user->name, $book->title);
             event(new NotificationHandler($message, $ownerId, config('model.notification.waiting')));
             Event::fire('notification', [
                 [
@@ -350,71 +349,92 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
     public function review($bookId, array $data)
     {
-        $book = $this->model()->findOrFail($bookId);
-        $dataReview = array_only($data, ['content', 'star']);
-        $dataReview['created_at'] = $dataReview['updated_at'] = Carbon::now();
+        try {
+            $book = $this->model()->findOrFail($bookId);
 
-        $book->reviews()->detach($this->user->id);
-        $book->reviews()->attach([
-            $this->user->id => $dataReview
-        ]);
-        $ownersId = $book->owners()->pluck('id');
-        if (isset($dataReview['star'])) {
-            Event::fire('books.averageStar', [
-                [
-                    'book' => $book,
-                    'star' => $dataReview['star'],
-                ]
+            $dataReview = array_only($data, ['content', 'star']);
+            $dataReview['created_at'] = $dataReview['updated_at'] = Carbon::now();
+
+            $book->reviews()->detach($this->user->id);
+            $book->reviews()->attach([
+                $this->user->id => $dataReview
             ]);
-
-            foreach ($ownersId as $ownerId) {
-                Event::fire('androidNotification', config('model.notification.review'));
-                $message = '' . $this->user->name . ' reviewed book: ' . $book->title;
-                event(new NotificationHandler($message, $ownerId, config('model.notification.review')));
-                Event::fire('notification', [
+            $ownersId = $book->owners()->pluck('id');
+            if (isset($dataReview['star'])) {
+                Event::fire('books.averageStar', [
                     [
-                        'current_user_id' => $this->user->id,
-                        'get_user_id' => $ownerId,
-                        'target_id' => $book->id,
-                        'type' => config('model.notification.review'),
+                        'book' => $book,
+                        'star' => $dataReview['star'],
                     ]
                 ]);
+
+                foreach ($ownersId as $ownerId) {
+                    Event::fire('androidNotification', config('model.notification.review'));
+                    $message = sprintf(translate('notification.reviewed_book'), $this->user->name, $book->title);
+                    event(new NotificationHandler($message, $ownerId, config('model.notification.review')));
+                    Event::fire('notification', [
+                        [
+                            'current_user_id' => $this->user->id,
+                            'get_user_id' => $ownerId,
+                            'target_id' => $book->id,
+                            'type' => config('model.notification.review'),
+                        ]
+                    ]);
+                }
             }
+        } catch (ModelNotFoundException $e) {
+            Log::error($e->getMessage());
+
+            throw new NotFoundException();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new UnknownException($e->getMessage(), $e->getCode());
         }
     }
 
     public function reviewNew($bookId, array $data)
     {
-        $book = $this->model()->findOrFail($bookId);
-        $dataReview = array_only($data, ['title','content', 'star']);
-        $dataReview['created_at'] = $dataReview['updated_at'] = Carbon::now();
+        try {
+            $book = $this->model()->findOrFail($bookId);
+            $dataReview = array_only($data, ['title','content', 'star']);
+            $dataReview['created_at'] = $dataReview['updated_at'] = Carbon::now();
 
-        $book->reviews()->detach($this->user->id);
-        $book->reviews()->attach([
-            $this->user->id => $dataReview
-        ]);
-        $ownersId = $book->owners()->pluck('id');
-        if (isset($dataReview['star'])) {
-            Event::fire('books.averageStar', [
-                [
-                    'book' => $book,
-                    'star' => $dataReview['star'],
-                ]
+            $book->reviews()->detach($this->user->id);
+            $book->reviews()->attach([
+                $this->user->id => $dataReview
             ]);
-
-            foreach ($ownersId as $ownerId) {
-                Event::fire('androidNotification', config('model.notification.review'));
-                $message = '' . $this->user->name . ' reviewed book: ' . $book->title;
-                event(new NotificationHandler($message, $ownerId, config('model.notification.review')));
-                Event::fire('notification', [
+            $ownersId = $book->owners()->pluck('id');
+            if (isset($dataReview['star'])) {
+                Event::fire('books.averageStar', [
                     [
-                        'current_user_id' => $this->user->id,
-                        'get_user_id' => $ownerId,
-                        'target_id' => $book->id,
-                        'type' => config('model.notification.review'),
+                        'book' => $book,
+                        'star' => $dataReview['star'],
                     ]
                 ]);
+
+                foreach ($ownersId as $ownerId) {
+                    Event::fire('androidNotification', config('model.notification.review'));
+                    $message = sprintf(translate('notification.reviewed_book'), $this->user->name, $book->title);
+                    event(new NotificationHandler($message, $ownerId, config('model.notification.review')));
+                    Event::fire('notification', [
+                        [
+                            'current_user_id' => $this->user->id,
+                            'get_user_id' => $ownerId,
+                            'target_id' => $book->id,
+                            'type' => config('model.notification.review'),
+                        ]
+                    ]);
+                }
             }
+        } catch (ModelNotFoundException $e) {
+            Log::error($e->getMessage());
+
+            throw new NotFoundException();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new UnknownException($e->getMessage(), $e->getCode());
         }
     }
 
@@ -651,26 +671,36 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
     public function addOwner($id)
     {
-        $book = $this->model()->findOrFail($id);
-        $owneredCurrentBook = $book->owners()->where('user_id', $this->user->id)->count() !== 0;
+        try {
+            $book = $this->model()->findOrFail($id);
+            $owneredCurrentBook = $book->owners()->where('user_id', $this->user->id)->count() !== 0;
 
-        if (!$owneredCurrentBook) {
-            $book->owners()->attach($this->user->id, [
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+            if (!$owneredCurrentBook) {
+                $book->owners()->attach($this->user->id, [
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            } else {
+                throw new ActionException('ownered_current_book');
+            }
+
+            Event::fire('notification', [
+                [
+                    'current_user_id' => $this->user->id,
+                    'get_user_id' => config('model.notification.add_book'),
+                    'target_id' => $book->id,
+                    'type' => config('model.notification.add_owner'),
+                ]
             ]);
-        } else {
-            throw new ActionException('ownered_current_book');
-        }
+        } catch (ModelNotFoundException $e) {
+            Log::error($e->getMessage());
 
-        Event::fire('notification', [
-            [
-                'current_user_id' => $this->user->id,
-                'get_user_id' => config('model.notification.add_book'),
-                'target_id' => $book->id,
-                'type' => config('model.notification.add_owner'),
-            ]
-        ]);
+            throw new NotFoundException();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new UnknownException($e->getMessage(), $e->getCode());
+        }
     }
 
     public function removeOwner(Book $book)
@@ -725,7 +755,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                         ->detach($userId);
 
                     Event::fire('androidNotification', config('model.notification.approve_waiting'));
-                    $message = '' . $this->user->name . ' accepted book: ' . $book->title;
+                    $message = sprintf(translate('notification.accepted_book'), $this->user->name, $book->title);
                     event(new NotificationHandler($message, $userId, config('model.notification.approve_waiting')));
                     Event::fire('notification', [
                         [
@@ -849,7 +879,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             if ($user_admin) {
                 $user_admin_id = $user_admin->id;
                 Event::fire('androidNotification', config('model.notification.admin.request_edit_book'));
-                $message = '' . $this->user->name . ' request edit book: ' . $book->title;
+                $message = sprintf(translate('notification.request_edit_book'), $this->user->name, $book->title);
                 event(new NotificationHandler($message, $user_admin_id, config('model.notification.admin.request_edit_book')));
                 Event::fire('notification', [
                     [
@@ -865,85 +895,105 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
     public function approveRequestUpdateBook($updateBookId)
     {
-        $updateBook = app(UpdateBook::class)->findOrFail($updateBookId);
-        $dataBookUpdate = [
-            'title' => $updateBook['title'],
-            'description' => $updateBook['description'],
-            'author' => $updateBook['author'],
-            'publish_date' => $updateBook['publish_date'],
-            'category_id' => $updateBook['category_id'],
-            'office_id' => $updateBook['office_id']
-        ];
+        try {
+            $updateBook = app(UpdateBook::class)->findOrFail($updateBookId);
+            $dataBookUpdate = [
+                'title' => $updateBook['title'],
+                'description' => $updateBook['description'],
+                'author' => $updateBook['author'],
+                'publish_date' => $updateBook['publish_date'],
+                'category_id' => $updateBook['category_id'],
+                'office_id' => $updateBook['office_id']
+            ];
 
-        $updateBook->currentBookInfo()->update($dataBookUpdate);
-        $currentBook = $updateBook->currentBookInfo;
+            $updateBook->currentBookInfo()->update($dataBookUpdate);
+            $currentBook = $updateBook->currentBookInfo;
 
-        foreach ($updateBook->updateMedia as $updateMedia) {
-            if ($updateMedia['media_id'] != NULL) {
-                $dataFile = [
-                    'name' => $updateMedia['name'],
-                    'size' => $updateMedia['size'],
-                    'type' => $updateMedia['type'],
-                    'path' => $updateMedia['path']
-                ];
+            foreach ($updateBook->updateMedia as $updateMedia) {
+                if ($updateMedia['media_id'] != NULL) {
+                    $dataFile = [
+                        'name' => $updateMedia['name'],
+                        'size' => $updateMedia['size'],
+                        'type' => $updateMedia['type'],
+                        'path' => $updateMedia['path']
+                    ];
 
-                $currentMedia = $currentBook->media()->findOrFail($updateMedia['media_id']);
-                if ($currentMedia) {
-                    if (isset($dataFile)) {
-                        $this->destroyFile($currentMedia->path);
-                        $currentMedia->update($dataFile);
+                    $currentMedia = $currentBook->media()->findOrFail($updateMedia['media_id']);
+                    if ($currentMedia) {
+                        if (isset($dataFile)) {
+                            $this->destroyFile($currentMedia->path);
+                            $currentMedia->update($dataFile);
+                        }
                     }
+
+                    $dataFile = [];
+                } else {
+                    $dataFile = [
+                        'name' => $updateMedia['name'],
+                        'size' => $updateMedia['size'],
+                        'type' => $updateMedia['type'],
+                        'path' => $updateMedia['path']
+                    ];
+
+                    $currentBook->media()->create($dataFile);
+                    $dataFile = [];
                 }
-
-                $dataFile = [];
-            } else {
-                $dataFile = [
-                    'name' => $updateMedia['name'],
-                    'size' => $updateMedia['size'],
-                    'type' => $updateMedia['type'],
-                    'path' => $updateMedia['path']
-                ];
-
-                $currentBook->media()->create($dataFile);
-                $dataFile = [];
             }
-        }
-        Event::fire('androidNotification', config('model.notification.admin.approve_request_update_book'));
-        $message = '' . $this->user->name . ' approve request update book: ' . $updateBook->title;
-        event(new NotificationHandler($message, $updateBook->user_id, config('model.notification.admin.approve_request_update_book')));
-        Event::fire('notification', [
-            [
-                'current_user_id' => $this->user->id,
-                'get_user_id' => $updateBook->user_id,
-                'target_id' => $updateBook->book_id,
-                'type' => config('model.notification.admin.approve_request_update_book'),
-            ]
-        ]);
+            Event::fire('androidNotification', config('model.notification.admin.approve_request_update_book'));
+            $message = sprintf(translate('notification.approve_request_update_book'), $this->user->name, $book->title);
+            event(new NotificationHandler($message, $updateBook->user_id, config('model.notification.admin.approve_request_update_book')));
+            Event::fire('notification', [
+                [
+                    'current_user_id' => $this->user->id,
+                    'get_user_id' => $updateBook->user_id,
+                    'target_id' => $updateBook->book_id,
+                    'type' => config('model.notification.admin.approve_request_update_book'),
+                ]
+            ]);
 
-        $updateBook->delete();
+            $updateBook->delete();
+        } catch (ModelNotFoundException $e) {
+            Log::error($e->getMessage());
+
+            throw new NotFoundException();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new UnknownException($e->getMessage(), $e->getCode());
+        }
     }
 
     public function deleteRequestUpdateBook($updateBookId)
     {
-        $updateBook = app(UpdateBook::class)->findOrFail($updateBookId);
+        try {
+            $updateBook = app(UpdateBook::class)->findOrFail($updateBookId);
 
-        Event::fire('androidNotification', config('model.notification.admin.delete_request_update_book'));
-        $message = '' . $this->user->name . ' Delete request edit book: ' . $updateBook->title;
-        event(new NotificationHandler($message, $updateBook->user_id, config('model.notification.admin.delete_request_update_book')));
-        Event::fire('notification', [
-            [
-                'current_user_id' => $this->user->id,
-                'get_user_id' => $updateBook->user_id,
-                'target_id' => $updateBook->book_id,
-                'type' => config('model.notification.admin.delete_request_update_book'),
-            ]
-        ]);
+            Event::fire('androidNotification', config('model.notification.admin.delete_request_update_book'));
+            $message = sprintf(translate('notification.delete_request_edit_book'), $this->user->name, $book->title);
+            event(new NotificationHandler($message, $updateBook->user_id, config('model.notification.admin.delete_request_update_book')));
+            Event::fire('notification', [
+                [
+                    'current_user_id' => $this->user->id,
+                    'get_user_id' => $updateBook->user_id,
+                    'target_id' => $updateBook->book_id,
+                    'type' => config('model.notification.admin.delete_request_update_book'),
+                ]
+            ]);
 
-        foreach ($updateBook->updateMedia as $updateMedia) {
-            $this->destroyFile($updateMedia->path);
+            foreach ($updateBook->updateMedia as $updateMedia) {
+                $this->destroyFile($updateMedia->path);
+            }
+
+            $updateBook->delete();
+        } catch (ModelNotFoundException $e) {
+            Log::error($e->getMessage());
+
+            throw new NotFoundException();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new UnknownException($e->getMessage(), $e->getCode());
         }
-
-        $updateBook->delete();
     }
 
     public function countRecord()
