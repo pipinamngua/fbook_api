@@ -68,6 +68,16 @@ class CategoryRepositoryEloquent extends AbstractRepositoryEloquent implements C
 
     public function show($categoryId)
     {
-        return $this->model()->findOrFail($categoryId);
+        try {
+            return $this->model()->findOrFail($categoryId);
+        } catch (ModelNotFoundException $e) {
+            Log::error($e->getMessage());
+
+            throw new NotFoundException();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new UnknownException($e->getMessage(), $e->getCode());
+        }
     }
 }
