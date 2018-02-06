@@ -40,11 +40,11 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
     public function model()
     {
-        return new \App\Eloquent\Book;
+        return new Book;
     }
     public function updateBookModel()
     {
-        return new \App\Eloquent\UpdateBook;
+        return new UpdateBook;
     }
 
     public function getDataInHomepage($with = [], $dataSelect = ['*'], $officeId = '')
@@ -186,7 +186,14 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             ->paginate($limit ?: config('paginate.default'));
     }
 
-    protected function getBooksByBookUserStatus($status, $with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
+    protected function getBooksByBookUserStatus(
+        $status, 
+        $with = [], 
+        $dataSelect = ['*'], 
+        $limit = '', 
+        $attribute = [], 
+        $officeId = ''
+    )
     {
         $input = $this->getDataInput($attribute);
 
@@ -251,11 +258,14 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     public function booking(Book $book, array $attributes)
     {
         $ownerId = $attributes['item']['owner_id'];
-
         if ($ownerId == $this->user->id) {
             throw new ActionException('not_booking_book_owned');
         }
-        $checkUser = $book->users()->wherePivot('user_id', $this->user->id)->wherePivot('owner_id', $ownerId)->orderBy('book_user.created_at', 'desc')->first();
+        $checkUser = $book->users()
+            ->wherePivot('user_id', $this->user->id)
+            ->wherePivot('owner_id', $ownerId)
+            ->orderBy('book_user.created_at', 'desc')
+            ->first();
         if ($checkUser) {
             if (
                 $checkUser->pivot->status == config('model.book_user.status.reading')
@@ -270,7 +280,6 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     ->updateExistingPivot($this->user->id, [
                         'status' => config('model.book_user.status.returning'),
                     ]);
-
                 Event::fire('androidNotification', config('model.notification.returning'));
                 $message = sprintf(translate('notification.returing_book'), $this->user->name, $book->title);
                 event(new NotificationHandler($message, $ownerId, config('model.notification.returning')));
@@ -289,7 +298,6 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                 $book->users()
                     ->wherePivot('status', config('model.book_user.status.waiting'))
                     ->detach($this->user->id);
-
                 Event::fire('androidNotification', config('model.notification.cancel'));
                 $message = sprintf(translate('notification.cancel_book_borrowing'), $this->user->name, $book->title);
                 event(new NotificationHandler($message, $ownerId, config('model.notification.cancel')));
@@ -311,7 +319,6 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
-
                 Event::fire('androidNotification', config('model.notification.waiting'));
                 $message = sprintf(translate('notification.waiting_book_borrowing'), $this->user->name, $book->title);
                 event(new NotificationHandler($message, $ownerId, config('model.notification.waiting')));
@@ -332,7 +339,6 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
-
             Event::fire('androidNotification', config('model.notification.waiting'));
             $message = sprintf(translate('notification.waiting_book_borrowing'), $this->user->name, $book->title);
             event(new NotificationHandler($message, $ownerId, config('model.notification.waiting')));
@@ -351,7 +357,6 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         try {
             $book = $this->model()->findOrFail($bookId);
-
             $dataReview = array_only($data, ['content', 'star']);
             $dataReview['created_at'] = $dataReview['updated_at'] = Carbon::now();
 
@@ -673,6 +678,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         try {
             $book = $this->model()->findOrFail($id);
+            
             $owneredCurrentBook = $book->owners()->where('user_id', $this->user->id)->count() !== 0;
 
             if (!$owneredCurrentBook) {
@@ -732,13 +738,14 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         $userId = $attribute['user_id'];
         $key = $attribute['key'];
-
-        $ownerBook = $book->owners()->where('user_id', $this->user->id)->firstOrFail();
-
+        $ownerBook = $book->owners()->where('user_id', $this->user->id)->first();
+        
         if ($key == config('settings.book_key.approve')) {
             if ($ownerBook->pivot->status == config('model.book.status.available')) {
-                $waitingList = $book->usersWaiting()->where('user_id', $userId)->wherePivot('owner_id', $this->user->id)->count();
-
+                $waitingList = $book->usersWaiting()
+                    ->where('user_id', $userId)
+                    ->wherePivot('owner_id', $this->user->id)
+                    ->count();
                 if ($waitingList) {
                     $book->owners()->updateExistingPivot($this->user->id, [
                         'status' => config('model.book.status.unavailable'),
@@ -753,7 +760,6 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                         ->wherePivot('owner_id', '<>', $this->user->id)
                         ->wherePivot('status', config('model.book_user.status.waiting'))
                         ->detach($userId);
-
                     Event::fire('androidNotification', config('model.notification.approve_waiting'));
                     $message = sprintf(translate('notification.accepted_book'), $this->user->name, $book->title);
                     event(new NotificationHandler($message, $userId, config('model.notification.approve_waiting')));
@@ -769,8 +775,10 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     throw new ActionException('not_in_waiting_list');
                 }
             } else {
-                $returningList = $book->usersReturning()->where('user_id', $userId)->wherePivot('owner_id', $this->user->id)->count();
-
+                $returningList = $book->usersReturning()
+                    ->where('user_id', $userId)
+                    ->wherePivot('owner_id', $this->user->id)
+                    ->count();
                 if ($returningList) {
                     $book->owners()->updateExistingPivot($this->user->id, [
                         'status' => config('model.book.status.available'),
@@ -781,9 +789,8 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                         ->updateExistingPivot($userId, [
                         'status' => config('model.book_user.status.returned'),
                     ]);
-
                     Event::fire('androidNotification', config('model.notification.approve_returning'));
-                    $message = '' . $this->user->name . ' approve returning book: ' . $book->title;
+                    sprintf(translate('notification.approve_returning_book'), $this->user->name, $book->title);
                     event(new NotificationHandler($message, $userId, config('model.notification.approve_returning')));
                     Event::fire('notification', [
                         [
@@ -799,8 +806,10 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             }
         } elseif ($key == config('settings.book_key.unapprove')) {
             if ($ownerBook->pivot->status == config('model.book.status.available')) {
-                $returnedList = $book->usersReturned()->where('user_id', $userId)->wherePivot('owner_id', $this->user->id)->count();
-
+                $returnedList = $book->usersReturned()
+                    ->where('user_id', $userId)
+                    ->wherePivot('owner_id', $this->user->id)
+                    ->count();
                 if ($returnedList) {
                     $book->owners()->updateExistingPivot($this->user->id, [
                         'status' => config('model.book.status.unavailable'),
@@ -812,8 +821,10 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     throw new ActionException('data_invalid');
                 }
             } else {
-                $readingList = $book->usersReading()->where('user_id', $userId)->wherePivot('owner_id', $this->user->id)->count();
-
+                $readingList = $book->usersReading()
+                    ->where('user_id', $userId)
+                    ->wherePivot('owner_id', $this->user->id)
+                    ->count();
                 if ($readingList) {
                     $book->owners()->updateExistingPivot($this->user->id, [
                         'status' => config('model.book.status.available'),
@@ -847,7 +858,10 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
     public function getBookByOffice($officeId, $dataSelect = ['*'], $with = [])
     {
-        return $this->select($dataSelect)->with($with)->where('office_id', $officeId)->paginate(config('paginate.default'));
+        return $this->select($dataSelect)
+            ->with($with)
+            ->where('office_id', $officeId)
+            ->paginate(config('paginate.default'));
     }
 
     public function requestUpdateBook(array $attributes, Book $book, MediaRepository $mediaRepository)

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Eloquent\Vote;
 use App\Eloquent\Review;
 use App\Eloquent\Notification;
 use App\Events\NotificationHandler;
@@ -27,12 +28,21 @@ class ReviewRepositoryEloquent extends AbstractRepositoryEloquent implements Rev
 
     public function reviewDetails($reviewId, $userId)
     {
-        return $this->model()->findOrFail($reviewId);
+        try {
+            return $this->model()->findOrFail($reviewId);
+        } catch (ModelNotFoundException $e) {
+            Log::error($e->getMessage());
+
+            throw new NotFoundException();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new UnknownException($e->getMessage(), $e->getCode());
+        }
     }
 
     public function vote($userId, $reviewId, $status)
     {
-
         $check = $this->model()->where([
             ['user_id', '=', $userId],
             ['review_id', '=', $reviewId],

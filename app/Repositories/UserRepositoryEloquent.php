@@ -42,82 +42,72 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
 
     public function getCurrentUser($userFromAuthServer)
     {
-        try {
-            $userInDatabase = $this->model()
-                ->whereEmail($userFromAuthServer['email'])
-                ->firstOrFail();
-            $workspaceInfo = $userFromAuthServer['workspaces'][0] ?: NULL;
-            $currentUser = $userInDatabase;
+        $userInDatabase = $this->model()
+            ->whereEmail($userFromAuthServer['email'])
+            ->first();
+        $workspaceInfo = $userFromAuthServer['workspaces'][0] ?: NULL;
+        $currentUser = $userInDatabase;
 
-            if (isset($workspaceInfo['id'])) {
-                $wsmWorkspace = app(Office::class)->where('wsm_workspace_id', $workspaceInfo['id'])->first();
-                if($wsmWorkspace) {
-                    $wsmWorkspace->update([
-                        'name' => $workspaceInfo['name'],
-                        'area' => $workspaceInfo['name'],
-                    ]);
-                } else {
-                    $wsmWorkspace = app(Office::class)->create([
-                        'name' => $workspaceInfo['name'],
-                        'area' => $workspaceInfo['name'],
-                        'wsm_workspace_id' => $workspaceInfo['id'],
-                    ])->fresh();
-                }
-            }
-            $userOfficeId = $wsmWorkspace['id'] ?: NULL;
-
-            if ($userInDatabase) {
-                if(in_array($userFromAuthServer['email'], config('settings.email_admin'))) {
-                    $currentUser->update([
-                        'name' => $userFromAuthServer['name'],
-                        'email' => $userFromAuthServer['email'],
-                        'avatar' => $userFromAuthServer['avatar'],
-                        'office_id' => $userOfficeId,
-                        'employee_code' => $userFromAuthServer['employee_code'],
-                        'role' => config('settings.admin'),
-                    ]);
-                } else {
-                    $currentUser->update([
-                        'name' => $userFromAuthServer['name'],
-                        'email' => $userFromAuthServer['email'],
-                        'avatar' => $userFromAuthServer['avatar'],
-                        'office_id' => $userOfficeId,
-                        'employee_code' => $userFromAuthServer['employee_code'],
-                        'role' => config('settings.user'),
-                    ]);
-                }
+        if (isset($workspaceInfo['id'])) {
+            $wsmWorkspace = app(Office::class)->where('wsm_workspace_id', $workspaceInfo['id'])->first();
+            if($wsmWorkspace) {
+                $wsmWorkspace->update([
+                    'name' => $workspaceInfo['name'],
+                    'area' => $workspaceInfo['name'],
+                ]);
             } else {
-                if(in_array($userFromAuthServer['email'], config('settings.email_admin'))) {
-                    $currentUser = $this->model()->create([
-                        'name' => $userFromAuthServer['name'],
-                        'email' => $userFromAuthServer['email'],
-                        'avatar' => $userFromAuthServer['avatar'],
-                        'office_id' => $userOfficeId,
-                        'employee_code' => $userFromAuthServer['employee_code'],
-                        'role' => config('settings.admin'),
-                    ])->fresh();
-                } else {
-                    $currentUser = $this->model()->create([
-                        'name' => $userFromAuthServer['name'],
-                        'email' => $userFromAuthServer['email'],
-                        'avatar' => $userFromAuthServer['avatar'],
-                        'office_id' => $userOfficeId,
-                        'employee_code' => $userFromAuthServer['employee_code'],
-                        'role' => config('settings.user'),
-                    ])->fresh();
-                }
+                $wsmWorkspace = app(Office::class)->create([
+                    'name' => $workspaceInfo['name'],
+                    'area' => $workspaceInfo['name'],
+                    'wsm_workspace_id' => $workspaceInfo['id'],
+                ])->fresh();
             }
-
-            return $currentUser;
-        } catch (ModelNotFoundException $e) {
-            Log::error($e->getMessage());
-
-            throw new NotFoundException();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-
-            throw new UnknownException($e->getMessage(), $e->getCode());
         }
+        $userOfficeId = $wsmWorkspace['id'] ?: NULL;
+
+        if ($userInDatabase) {
+            if(in_array($userFromAuthServer['email'], config('settings.email_admin'))) {
+                $currentUser->update([
+                    'name' => $userFromAuthServer['name'],
+                    'email' => $userFromAuthServer['email'],
+                    'avatar' => $userFromAuthServer['avatar'],
+                    'office_id' => $userOfficeId,
+                    'employee_code' => $userFromAuthServer['employee_code'],
+                    'role' => config('settings.admin'),
+                ]);
+            } else {
+                $currentUser->update([
+                    'name' => $userFromAuthServer['name'],
+                    'email' => $userFromAuthServer['email'],
+                    'avatar' => $userFromAuthServer['avatar'],
+                    'office_id' => $userOfficeId,
+                    'employee_code' => $userFromAuthServer['employee_code'],
+                    'role' => config('settings.user'),
+                ]);
+            }
+        } else {
+            if(in_array($userFromAuthServer['email'], config('settings.email_admin'))) {
+                $currentUser = $this->model()->create([
+                    'name' => $userFromAuthServer['name'],
+                    'email' => $userFromAuthServer['email'],
+                    'avatar' => $userFromAuthServer['avatar'],
+                    'office_id' => $userOfficeId,
+                    'employee_code' => $userFromAuthServer['employee_code'],
+                    'role' => config('settings.admin'),
+                ])->fresh();
+            } else {
+                $currentUser = $this->model()->create([
+                    'name' => $userFromAuthServer['name'],
+                    'email' => $userFromAuthServer['email'],
+                    'avatar' => $userFromAuthServer['avatar'],
+                    'office_id' => $userOfficeId,
+                    'employee_code' => $userFromAuthServer['employee_code'],
+                    'role' => config('settings.user'),
+                ])->fresh();
+            }
+        }
+
+        return $currentUser;
     }
 
     public function getDataBookOfUser($id, $action, $select = ['*'], $with = [], $officeId = '')
@@ -127,7 +117,8 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
                 in_array($action, array_keys(config('model.book_user.status')))
                 && in_array(config('model.book_user.status.' . $action), array_values(config('model.book_user.status')))
             ) {
-                return $this->model()->findOrFail($id)->books()
+                return $this->model()->findOrFail($id)
+                    ->books()
                     ->getBookByOffice($officeId)
                     ->with($with)
                     ->wherePivot('status', config('model.book_user.status.' . $action))
@@ -216,30 +207,20 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
 
     public function ownedBooks($dataSelect = ['*'], $with = [])
     {
-        try {
-            $books = app(Book::class)
-                ->select($dataSelect)
-                ->with(array_merge($with, ['userReadingBook' => function($query) {
-                    $query->select('id', 'name', 'avatar', 'position');
-                }]))
-                ->where('owner_id', $this->user->id)
-                ->paginate(config('paginate.default'));
+        $books = app(Book::class)
+            ->select($dataSelect)
+            ->with(array_merge($with, ['userReadingBook' => function($query) {
+                $query->select('id', 'name', 'avatar', 'position');
+            }]))
+            ->where('owner_id', $this->user->id)
+            ->paginate(config('paginate.default'));
 
-            foreach ($books->items() as $book) {
-                $book->user_reading_book = $book->userReadingBook->firstOrFail();
-                unset($book['userReadingBook']);
-            }
-
-            return $books;
-        } catch (ModelNotFoundException $e) {
-            Log::error($e->getMessage());
-
-            throw new NotFoundException();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-
-            throw new UnknownException($e->getMessage(), $e->getCode());
+        foreach ($books->items() as $book) {
+            $book->user_reading_book = $book->userReadingBook->first();
+            unset($book['userReadingBook']);
         }
+
+        return $books;
     }
 
     public function getListWaitingApprove($dataSelect = ['*'], $with = [], $officeId = '')
@@ -267,41 +248,30 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
 
     public function getBookApproveDetail($bookId, $dataSelect = ['*'], $with = [])
     {
-        try {
-            return $this->user->owners()->where('book_id', $bookId)
-                ->select($dataSelect)
-                ->with(array_merge($with, [
-                    'usersWaiting' => function($query) {
-                        $query->select('id', 'name', 'avatar', 'position', 'email')
-                            ->where('book_user.owner_id', $this->user->id);
-                        $query->orderBy('book_user.created_at', 'ASC');
-                    },
-                    'usersReturning' => function($query) {
-                        $query->select('id', 'name', 'avatar', 'position', 'email')
-                            ->where('book_user.owner_id', $this->user->id);
-                        $query->orderBy('book_user.created_at', 'ASC')->limit(1);
-                    },
-                    'usersReading' => function($query) {
-                        $query->select('id', 'name', 'avatar', 'position', 'email')
-                            ->where('book_user.owner_id', $this->user->id);
-                        $query->orderBy('book_user.created_at', 'ASC')->limit(1);
-                    },
-                    'usersReturned' => function($query) {
-                        $query->select('id', 'name', 'avatar', 'position', 'email')
-                            ->where('book_user.owner_id', $this->user->id);
-                        $query->orderBy('book_user.created_at', 'ASC');
-                    }
-                ]))
-                ->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            Log::error($e->getMessage());
-
-            throw new NotFoundException();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-
-            throw new UnknownException($e->getMessage(), $e->getCode());
-        }
+        return $this->user->owners()->where('book_id', $bookId)
+            ->select($dataSelect)
+            ->with(array_merge($with, [
+                'usersWaiting' => function($query) {
+                    $query->select('id', 'name', 'avatar', 'position', 'email')
+                        ->where('book_user.owner_id', $this->user->id);
+                    $query->orderBy('book_user.created_at', 'ASC');
+                },
+                'usersReturning' => function($query) {
+                    $query->select('id', 'name', 'avatar', 'position', 'email')
+                        ->where('book_user.owner_id', $this->user->id);
+                    $query->orderBy('book_user.created_at', 'ASC')->limit(1);
+                },
+                'usersReading' => function($query) {
+                    $query->select('id', 'name', 'avatar', 'position', 'email')
+                        ->where('book_user.owner_id', $this->user->id);
+                    $query->orderBy('book_user.created_at', 'ASC')->limit(1);
+                },
+                'usersReturned' => function($query) {
+                    $query->select('id', 'name', 'avatar', 'position', 'email')
+                        ->where('book_user.owner_id', $this->user->id);
+                    $query->orderBy('book_user.created_at', 'ASC');
+                }
+            ]))->first();
     }
 
     public function getNotifications()
@@ -363,61 +333,41 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
 
     public function followOrUnfollow($userId)
     {
-        try {
-            if ($this->user->id === $userId) {
-                throw new ActionException('can_not_follow_yourself');
-            }
-            $follow = app(UserFollow::class)->where('following_id', $userId)
-                ->where('follower_id', $this->user->id)
-                ->firstOrFail();
-            if ($follow) {
-                $follow->delete();
-            } else {
-                app(UserFollow::class)->create([
-                    'following_id' => $userId,
-                    'follower_id' => $this->user->id,
-                ]);
-            }
-        } catch (ModelNotFoundException $e) {
-            Log::error($e->getMessage());
-
-            throw new NotFoundException();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-
-            throw new UnknownException($e->getMessage(), $e->getCode());
+        if ($this->user->id === $userId) {
+            throw new ActionException('can_not_follow_yourself');
+        }
+        $follow = app(UserFollow::class)->where('following_id', $userId)
+            ->where('follower_id', $this->user->id)
+            ->first();
+        if ($follow) {
+            $follow->delete();
+        } else {
+            app(UserFollow::class)->create([
+                'following_id' => $userId,
+                'follower_id' => $this->user->id,
+            ]);
         }
     }
 
     public function getFollowInfo($id, $dataSelect = ['*'], $with = [])
     {
-        try {
-            $follower_id = $this->model()->findOrFail($id)->usersFollowing->pluck('follower_id');
-            $following_id = $this->model()->findOrFail($id)->usersFollower->pluck('following_id');
-            $followedBy = $this->model()->select('id', 'name', 'avatar')->whereIn('id', $follower_id)->orderBy('name')->get();
-            $following = $this->model()->select('id', 'name', 'avatar')->whereIn('id', $following_id)->orderBy('name')->get();
-            $countFollowed = $followedBy->count();
-            $countFollowing = $following->count();
-            $isFollow = app(UserFollow::class)
-                ->where('following_id', $id)
-                ->where('follower_id', $this->user->id)
-                ->firstOrFail();
-            if (!$isFollow) {
-                $isFollow = false;
-            } else {
-                $isFollow = true;
-            }
-
-            return compact('followedBy', 'following', 'isFollow', 'countFollowed', 'countFollowing');
-        } catch (ModelNotFoundException $e) {
-            Log::error($e->getMessage());
-
-            throw new NotFoundException();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-
-            throw new UnknownException($e->getMessage(), $e->getCode());
+        $follower_id = $this->model()->findOrFail($id)->usersFollowing->pluck('follower_id');
+        $following_id = $this->model()->findOrFail($id)->usersFollower->pluck('following_id');
+        $followedBy = $this->model()->select('id', 'name', 'avatar')->whereIn('id', $follower_id)->orderBy('name')->get();
+        $following = $this->model()->select('id', 'name', 'avatar')->whereIn('id', $following_id)->orderBy('name')->get();
+        $countFollowed = $followedBy->count();
+        $countFollowing = $following->count();
+        $isFollow = app(UserFollow::class)
+            ->where('following_id', $id)
+            ->where('follower_id', $this->user->id)
+            ->first();
+        if (!$isFollow) {
+            $isFollow = false;
+        } else {
+            $isFollow = true;
         }
+
+        return compact('followedBy', 'following', 'isFollow', 'countFollowed', 'countFollowing');
     }
 
     public function updateViewNotifications($notificationId)
@@ -453,7 +403,9 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
 
     public function updateViewNotificationsAll()
     {
-        $update_view = app(Notification::class)->where('viewed', config('model.notification.not_view'))->update(['viewed' => config('model.notification.viewed')]);
+        $update_view = app(Notification::class)
+            ->where('viewed', config('model.notification.not_view'))
+            ->update(['viewed' => config('model.notification.viewed')]);
     }
 
     public function getWaitingApproveEditBook($dataSelect = ['*'])
@@ -511,22 +463,12 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
 
     public function getDetail($userId)
     {
-        try {
-            return $this->model()
-                ->where('id', $userId)
-                ->with(['office'])
-                ->withCount('owners')
-                ->withCount('usersFollower')
-                ->withCount('usersFollowing')
-                ->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            Log::error($e->getMessage());
-
-            throw new NotFoundException();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-
-            throw new UnknownException($e->getMessage(), $e->getCode());
-        }
+        return $this->model()
+            ->where('id', $userId)
+            ->with(['office'])
+            ->withCount('owners')
+            ->withCount('usersFollower')
+            ->withCount('usersFollowing')
+            ->first();
     }
 }
