@@ -26,9 +26,14 @@ class Book extends Model
         'office_id',
     ];
 
-    protected $hidden = ['category_id', 'office_id'];
+    protected $hidden = [
+        'category_id', 
+        'office_id'
+    ];
 
-    protected $appends = ['overview'];
+    protected $appends = [
+        'overview'
+    ];
 
     public function category()
     {
@@ -48,6 +53,16 @@ class Book extends Model
     public function owners()
     {
         return $this->belongsToMany(User::class, 'owners')->withPivot('status');
+    }
+
+    public function reviews()
+    {
+        return $this->belongsToMany(User::class, 'reviews')->withPivot('content', 'star');
+    }
+
+    public function reviewsDetail()
+    {
+        return $this->hasMany(Review::class, 'book_id')->with('user');
     }
 
     public function updateBooks()
@@ -73,16 +88,6 @@ class Book extends Model
     public function usersReturned()
     {
         return $this->users()->wherePivot('status', config('model.book_user.status.returned'));
-    }
-
-    public function reviews()
-    {
-        return $this->belongsToMany(User::class, 'reviews')->withPivot('content', 'star');
-    }
-
-    public function reviewsDetail()
-    {
-        return $this->hasMany(Review::class, 'book_id')->with('user');
     }
 
     public function media()

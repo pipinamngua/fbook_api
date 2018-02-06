@@ -2,8 +2,12 @@
 
 namespace App\Repositories;
 
-use App\Contracts\Repositories\OfficeRepository;
 use App\Eloquent\Office;
+use App\Contracts\Repositories\OfficeRepository;
+use App\Exceptions\Api\ActionException;
+use App\Exceptions\Api\NotFoundException;
+use App\Exceptions\Api\UnknownException;
+use Log;
 
 class OfficeRepositoryEloquent extends AbstractRepositoryEloquent implements OfficeRepository
 {

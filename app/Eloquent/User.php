@@ -36,7 +36,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 
+        'remember_token',
     ];
 
     protected $appends = [
@@ -65,11 +66,6 @@ class User extends Authenticatable
         return $this->belongsToMany(Book::class, 'reviews')->withPivot('title','content', 'star');
     }
 
-    public function suggestions()
-    {
-        return $this->hasMany(Suggestion::class);
-    }
-
     public function owners()
     {
         return $this->belongsToMany(Book::class, 'owners', 'user_id');
@@ -78,6 +74,11 @@ class User extends Authenticatable
     public function usersFollowing()
     {
         return $this->hasMany(UserFollow::class, 'following_id');
+    }
+
+    public function suggestions()
+    {
+        return $this->hasMany(Suggestion::class);
     }
 
     public function usersFollower()

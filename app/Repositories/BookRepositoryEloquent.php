@@ -2,24 +2,24 @@
 
 namespace App\Repositories;
 
-use App\Contracts\Repositories\BookRepository;
-use App\Contracts\Repositories\UserRepository;
 use App\Eloquent\Book;
 use App\Eloquent\Media;
 use App\Eloquent\User;
 use App\Eloquent\BookUser;
 use App\Eloquent\UpdateBook;
-use Carbon\Carbon;
+use App\Eloquent\Notification;
+use App\Contracts\Repositories\BookRepository;
+use App\Contracts\Repositories\UserRepository;
+use App\Contracts\Repositories\MediaRepository;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Traits\Repositories\UploadableTrait;
+use App\Events\NotificationHandler;
+use App\Exceptions\Api\ActionException;
 use App\Exceptions\Api\NotFoundException;
 use App\Exceptions\Api\UnknownException;
+use Carbon\Carbon;
 use Log;
-use App\Contracts\Repositories\MediaRepository;
-use App\Exceptions\Api\ActionException;
-use App\Traits\Repositories\UploadableTrait;
-use App\Eloquent\Notification;
-use App\Events\NotificationHandler;
 
 class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookRepository
 {

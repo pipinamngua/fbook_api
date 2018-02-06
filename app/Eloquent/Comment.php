@@ -6,8 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
-    protected $fillable = ['user_id', 'review_id', 'content'];
-    protected $appends = ['time_ago'];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'user_id', 
+        'review_id', 
+        'content'
+    ];
+
+    protected $appends = [
+        'time_ago'
+    ];
 
     public function review()
     {

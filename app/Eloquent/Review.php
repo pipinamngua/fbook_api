@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'title',
         'content',
@@ -14,7 +19,12 @@ class Review extends Model
         'down_vote'
     ];
 
-    protected $hidden = ['user_id', 'book_id', 'owner_id', 'updated_at'];
+    protected $hidden = [
+        'user_id', 
+        'book_id', 
+        'owner_id', 
+        'updated_at'
+    ];
 
     public function user()
     {

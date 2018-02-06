@@ -2,12 +2,16 @@
 
 namespace App\Repositories;
 
-use App\Contracts\Repositories\ReviewRepository;
 use App\Eloquent\Review;
 use App\Eloquent\Notification;
-use Illuminate\Support\Facades\Event;
 use App\Events\NotificationHandler;
+use App\Contracts\Repositories\ReviewRepository;
+use Illuminate\Support\Facades\Event;
+use App\Exceptions\Api\ActionException;
+use App\Exceptions\Api\NotFoundException;
+use App\Exceptions\Api\UnknownException;
 use Auth;
+use Log;
 
 class ReviewRepositoryEloquent extends AbstractRepositoryEloquent implements ReviewRepository
 {

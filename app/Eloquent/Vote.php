@@ -11,4 +11,19 @@ class Vote extends Model
      *
      * @var array
      */
+    protected $fillable = [
+        'user_id',
+        'review_id',
+        'status',
+    ];
+
+    public function userVote()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function reviewVote()
+    {
+        return $this->belongsTo(Review::class, 'review_id');
+    }
 }

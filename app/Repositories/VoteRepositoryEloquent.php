@@ -2,9 +2,13 @@
 
 namespace App\Repositories;
 
-use App\Contracts\Repositories\VoteRepository;
 use App\Eloquent\Vote;
 use App\Eloquent\Review;
+use App\Contracts\Repositories\VoteRepository;
+use App\Exceptions\Api\ActionException;
+use App\Exceptions\Api\NotFoundException;
+use App\Exceptions\Api\UnknownException;
+use Log;
 
 class VoteRepositoryEloquent extends AbstractRepositoryEloquent implements VoteRepository
 {

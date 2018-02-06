@@ -2,8 +2,12 @@
 
 namespace App\Repositories;
 
-use App\Contracts\Repositories\OwnerRepository;
 use App\Eloquent\Owner;
+use App\Contracts\Repositories\OwnerRepository;
+use App\Exceptions\Api\ActionException;
+use App\Exceptions\Api\NotFoundException;
+use App\Exceptions\Api\UnknownException;
+use Log;
 
 class OwnerRepositoryEloquent extends AbstractRepositoryEloquent implements OwnerRepository
 {
