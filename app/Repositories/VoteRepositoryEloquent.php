@@ -20,49 +20,29 @@ class VoteRepositoryEloquent extends AbstractRepositoryEloquent implements VoteR
 
     public function checkVoted($userId, $reviewId)
     {
-        try {
-            $check = $this->model()->where([
-                ['user_id', '=', $userId],
-                ['review_id', '=', $reviewId],
-            ])->firstOrFail();
+        $check = $this->model()->where([
+            ['user_id', '=', $userId],
+            ['review_id', '=', $reviewId],
+        ])->first();
 
-            return $check;
-        } catch (ModelNotFoundException $e) {
-            Log::error($e->getMessage());
-
-            throw new NotFoundException();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-
-            throw new UnknownException($e->getMessage(), $e->getCode());
-        }
+        return $check;
     }
 
     public function addNewVote($userId, $reviewId, $status)
     {
-        try {
-            $review = Review::findOrFail($reviewId);
-            if ($review->user_id == $userId) {
-                return false;
-            }
-            $this->model()->insert([
-                [
-                    'user_id' => $userId,
-                    'review_id' => $reviewId,
-                    'status' => $status
-                ],
-            ]);
-
-            return true;
-        } catch (ModelNotFoundException $e) {
-            Log::error($e->getMessage());
-
-            throw new NotFoundException();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-
-            throw new UnknownException($e->getMessage(), $e->getCode());
+        $review = Review::findOrFail($reviewId);
+        if ($review->user_id == $userId) {
+            return false;
         }
+        $this->model()->insert([
+            [
+                'user_id' => $userId,
+                'review_id' => $reviewId,
+                'status' => $status
+            ],
+        ]);
+
+        return true;
     }
 
     public function changeStatus($userId, $reviewId, $status)
@@ -75,25 +55,15 @@ class VoteRepositoryEloquent extends AbstractRepositoryEloquent implements VoteR
 
     public function checkUserVoted($userId, $reviewId)
     {
-        try {
-            $checkVoted = $this->model()->where([
-                ['user_id', '=', $userId],
-                ['review_id', '=', $reviewId],
-            ])->firstOrFail();
+        $checkVoted = $this->model()->where([
+            ['user_id', '=', $userId],
+            ['review_id', '=', $reviewId],
+        ])->first();
 
-            if ($checkVoted) {
-                return $checkVoted->status;
-            }
-
-            return false;
-        } catch (ModelNotFoundException $e) {
-            Log::error($e->getMessage());
-
-            throw new NotFoundException();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-
-            throw new UnknownException($e->getMessage(), $e->getCode());
+        if ($checkVoted) {
+            return $checkVoted->status;
         }
+
+        return false;
     }
 }
