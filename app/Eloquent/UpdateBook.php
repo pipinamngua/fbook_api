@@ -23,7 +23,12 @@ class UpdateBook extends Model
         'office_id',
     ];
 
-    protected $hidden = ['category_id', 'office_id', 'user_id', 'book_id'];
+    protected $hidden = [
+        'category_id', 
+        'office_id', 
+        'user_id', 
+        'book_id'
+    ];
 
     public function category()
     {

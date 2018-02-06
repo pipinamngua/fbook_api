@@ -2,17 +2,20 @@
 
 namespace App\Repositories;
 
-use App\Contracts\Repositories\UserRepository;
-use App\Exceptions\Api\ActionException;
+use App\Eloquent\User;
 use App\Eloquent\Book;
 use App\Eloquent\UpdateBook;
 use App\Eloquent\Office;
 use App\Eloquent\Category;
 use App\Eloquent\UserFollow;
 use App\Eloquent\Notification;
+use App\Contracts\Repositories\UserRepository;
 use Illuminate\Support\Facades\Event;
-use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
+use Carbon\Carbon;
+use App\Exceptions\Api\ActionException;
+use App\Exceptions\Api\NotFoundException;
+use App\Exceptions\Api\UnknownException;
 use Log;
 
 class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserRepository
@@ -34,7 +37,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
 
     public function model()
     {
-        return new \App\Eloquent\User;
+        return new User;
     }
 
     public function getCurrentUser($userFromAuthServer)

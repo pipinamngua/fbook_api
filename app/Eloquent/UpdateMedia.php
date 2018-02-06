@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class UpdateMedia extends Model
 {
     protected $table = 'update_media';
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -23,9 +24,16 @@ class UpdateMedia extends Model
         'thumb_path',
     ];
 
-    protected $hidden = ['thumb_path', 'created_at', 'updated_at'];
+    protected $hidden = [
+        'thumb_path', 
+        'created_at', 
+        'updated_at'
+    ];
 
-    protected $appends = ['mobile', 'web'];
+    protected $appends = [
+        'mobile', 
+        'web'
+    ];
 
     private function responseMediaStorage($size = null)
     {

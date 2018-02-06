@@ -2,8 +2,12 @@
 
 namespace App\Repositories;
 
-use App\Contracts\Repositories\CommentRepository;
 use App\Eloquent\Comment;
+use App\Contracts\Repositories\CommentRepository;
+use App\Exceptions\Api\ActionException;
+use App\Exceptions\Api\NotFoundException;
+use App\Exceptions\Api\UnknownException;
+use Log;
 
 class CommentRepositoryEloquent extends AbstractRepositoryEloquent implements CommentRepository
 {

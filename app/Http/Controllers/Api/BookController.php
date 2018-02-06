@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use App\Events\NotificationHandler;
 use App\Contracts\Repositories\UserRepository;
 use App\Eloquent\User;
+use Log;
 
 class BookController extends ApiController
 {
@@ -102,7 +103,6 @@ class BookController extends ApiController
     public function show($id)
     {
         $this->compacts['item'] = $this->repository->show($id);
-
         return $this->jsonRender();
     }
 

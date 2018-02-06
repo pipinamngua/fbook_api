@@ -2,9 +2,13 @@
 
 namespace App\Repositories;
 
-use App\Contracts\Repositories\CategoryRepository;
 use App\Eloquent\Category;
+use App\Contracts\Repositories\CategoryRepository;
 use Illuminate\Pagination\Paginator;
+use App\Exceptions\Api\ActionException;
+use App\Exceptions\Api\NotFoundException;
+use App\Exceptions\Api\UnknownException;
+use Log;
 
 class CategoryRepositoryEloquent extends AbstractRepositoryEloquent implements CategoryRepository
 {

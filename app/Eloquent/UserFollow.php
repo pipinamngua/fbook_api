@@ -8,6 +8,11 @@ class UserFollow extends Model
 {
     protected $table = 'user_follow';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'following_id',
         'follower_id',

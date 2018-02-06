@@ -2,13 +2,17 @@
 
 namespace App\Repositories;
 
-use App\Contracts\Repositories\MediaRepository;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\Repositories\UploadableTrait;
 use App\Eloquent\Media;
 use App\Eloquent\UpdateMedia;
 use App\Eloquent\Book;
 use App\Eloquent\UpdateBook;
+use App\Traits\Repositories\UploadableTrait;
+use App\Contracts\Repositories\MediaRepository;
+use App\Exceptions\Api\ActionException;
+use App\Exceptions\Api\NotFoundException;
+use App\Exceptions\Api\UnknownException;
+use Log;
 
 class MediaRepositoryEloquent extends AbstractRepositoryEloquent implements MediaRepository
 {

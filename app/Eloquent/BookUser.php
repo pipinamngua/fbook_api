@@ -6,6 +6,11 @@ class BookUser extends AbstractEloquent
 {
     protected $table = 'book_user';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'type',
         'status',
