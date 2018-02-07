@@ -12,7 +12,7 @@ class UserController extends ApiController
 {
     protected $bookSelect = [
         'books.id',
-        'title',
+        'books.title',
         'description',
         'author',
         'code',

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories;
+use Log;
 
 abstract class AbstractRepositoryEloquent
 {

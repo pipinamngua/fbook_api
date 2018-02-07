@@ -26,7 +26,15 @@ class BookingRequest extends AbstractRequest
         return [
             'item.book_id' => 'required|numeric',
             'item.owner_id' => 'required|numeric|exists:users,id',
-            'item.status' => 'in:' . implode(',', array_merge(array_values(config('model.book_user.status')), [config('model.book_user_status_cancel')])),
+            'item.status' => 'in:' . implode(',', 
+                array_merge(
+                    array_values(
+                        config('model.book_user.status')
+                    ), [
+                        config('model.book_user_status_cancel')
+                    ]
+                )
+            ),
         ];
     }
 }

@@ -1,0 +1,66 @@
+{
+    "app":{
+      "name": "Fbook Framgia",
+      "version": ":param"
+    },
+    "exception": {
+      "default": "Yêu cầu không hợp lệ",
+      "action": "Hành động không hợp lệ",
+      "store": "Không lưu được thông tin",
+      "storeMultiple": "Không lưu được thông tin",
+      "update": "Không cập nhật được thông tin",
+      "updateMultiple": "Không cập nhật được thông tin",
+      "delete": "Không xóa được thông tin",
+      "restore": "Không khôi phục được thông tin",
+      "remove": "Không xóa được thông tin",
+      "not_found": "Thông tin không tồn tại",
+      "not_owner": "Không phải chủ sở hữu",
+      "not_admin": "Không phải quản trị viên",
+      "unknown_error": "Lỗi không xác định",
+      "not_booking_book_owned": "Bạn không thể mượn sách mà bạn sở hữu",
+      "ownered_current_book": "Bạn không phải chủ cuốn sách",
+      "not_in_waiting_list": "Người dùng không có trong danh sách chờ",
+      "other_user_reading_book": "Người dùng khác đang đọc cuốn sách này",
+      "can_not_follow_yourself": "Bạn không thể theo chính mình",
+      "data_invalid": "Dữ liệu không hợp lệ"
+    },
+    "http_message": {
+      "not_modified": "Không thể sửa",
+      "bad_request": "Yêu cầu không hợp lệ",
+      "unauthorized": "Không được phép",
+      "access_denied": "Truy cập bị từ chối",
+      "not_found": "Không tìm thấy",
+      "method_not_allowed": "Phương pháp không được phép",
+      "validator_error": "Lỗi xác thực",
+      "internal_server_error": "Lỗi máy chủ nội bộ",
+      "bad_gateway": "Bad Gateway",
+      "service_unavailable": "Dịch vụ không sẵn có",
+      "gateway_timeout": "Gateway Timeout"
+    },
+    "other_error": {
+      "invalid": ":param là giá trị không hợp lệ"
+    },
+    "title_key": {
+      "latest": "Sách mới nhất",
+      "view": "Sách được xem nhiều nhất",
+      "rating": "Sách đánh giá hàng đầu",
+      "waiting": "Sách đang chờ đón hàng đầu",
+      "read": "Sách được đọc nhiều nhất"
+    },
+    "notification": {
+      "returing_book": "%s muốn lấy lại cuốn sách: %s",
+      "cancel_book_borrowing": "%s hủy bỏ việc mượn sách: %s",
+      "cancel_book_waiting": "%s chờ đợi mượn sách: %s",
+      "reviewed_book": "%s sách đã được duyệt lại: %s",
+      "accepted_book": "%s sách đã được chấp nhận: %s",
+      "request_edit_book": "%s yêu cầu chỉnh sửa cuốn sách: %s",
+      "approve_returning_book": "%s phê duyệt sách trả lại: %s",
+      "approve_request_update_book": "%s phê duyệt cuốn sách cập nhật yêu cầu: %s",
+      "delete_request_edit_book": "%s xóa yêu cầu chỉnh sửa cuốn sách: %s"
+    },
+    "review": {
+      "upvoted": "Bài đánh giá của bạn đã được upvoted bởi %s",
+      "downvoted": "Bài đánh giá của bạn đã được downvoted bởi %s"
+    }
+  }
+  

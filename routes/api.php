@@ -1,7 +1,5 @@
 <?php
-
 use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -12,18 +10,15 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], function () {
     Route::get('home', ['as' => 'home', 'uses' => 'HomeController@index']);
     Route::post('home/filters', ['as' => 'homeFilters', 'uses' => 'HomeController@filter']);
-
     Route::group(['namespace' => 'Auth'], function () {
         Route::post('register', ['as' => 'register', 'uses' => 'RegisterController@create']);
         Route::post('login', ['as' => 'login', 'uses' => 'LoginController@login']);
         Route::post('logout', ['as' => 'logout', 'uses' => 'LoginController@logout']);
         Route::post('refresh-token', ['as' => 'refresh.token', 'uses' => 'LoginController@refreshToken']);
     });
-
     Route::get('books/sort-by', 'BookController@sortBy');
     Route::resource('books', 'BookController', [
         'except' => ['store', 'update', 'destroy']
@@ -40,7 +35,6 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
     Route::resource('offices', 'OfficeController', [
         'only' => ['index']
     ]);
-
     Route::get('search-books', 'SearchController@search');
     Route::get('search-books-detail/{book_id}', 'SearchController@detail');
     Route::get('books/review-details/{reviewId}/{userId}', ['as' => 'books.review.detail',
@@ -84,7 +78,6 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::get('notifications/dropdown', ['as' => 'users.notifications.dropdown', 'uses' => 'UserController@getNotificationsDropdown']);
         Route::put('books/{book_id}/request_update', ['as' => 'books.request.update', 'uses' => 'BookController@requestUpdate']);
     });
-
     Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
         Route::get('waiting-update-book', ['as' => 'users.waiting-update-book', 'uses' => 'UserController@getWaitingApproveEditBook']);
         Route::post('books/approve-request-edit/{update_book_id}', ['as' => 'books.approve.request.edit', 'uses' => 'BookController@approveRequestUpdate']);
