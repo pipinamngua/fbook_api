@@ -7,6 +7,8 @@ use App\Contracts\Repositories\CommentRepository;
 use App\Contracts\Repositories\VoteRepository;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\Book\CommentRequest;
+use App\Http\Requests\Api\Book\EditCommentRequest;
+use Log;
 
 class ReviewController extends ApiController
 {
@@ -92,6 +94,21 @@ class ReviewController extends ApiController
         return $this->doAction(function () use ($request) {
             $this->repository->newComment($request->all());
         }, __FUNCTION__);
+    }
+
+    public function editCommentReview(CommentRepository $commentRepository, EditCommentRequest $request)
+    {
+        $dataComment = $request->only(
+            'reviewId',
+            'userId',
+            'id',
+            'content'
+        );
+
+        return $this->doAction(function () use ($commentRepository, $dataComment) {
+            $commentRepository->updateComment($dataComment);
+        }, __FUNCTION__);
+        return $request->all();
     }
 
     public function removeComment(CommentRepository $commentRepository, $commentId)
