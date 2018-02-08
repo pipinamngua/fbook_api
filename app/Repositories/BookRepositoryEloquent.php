@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Eloquent\Book;
 use App\Eloquent\Media;
 use App\Eloquent\User;
+use App\Eloquent\Office;
 use App\Eloquent\BookUser;
 use App\Eloquent\UpdateBook;
 use App\Eloquent\Notification;
@@ -1013,5 +1014,15 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     public function countRecord()
     {
         return $this->model()->count();
+    }
+
+    public function getByPage($dataSelect = ['*'], $withRelation = [])
+    {
+        return $this->model()
+            ->select($dataSelect)
+            ->with(array_merge($withRelation, ['office']))
+            ->withCount('owners')
+            ->orderBy('created_at', 'ASC')
+            ->paginate(config('paginate.default'));
     }
 }
