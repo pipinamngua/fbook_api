@@ -43,6 +43,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         return new Book;
     }
+    
     public function updateBookModel()
     {
         return new UpdateBook;
@@ -403,7 +404,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         try {
             $book = $this->model()->findOrFail($bookId);
-            $dataReview = array_only($data, ['title','content', 'star']);
+            $dataReview = array_only($data, ['title', 'content', 'star']);
             $dataReview['created_at'] = $dataReview['updated_at'] = Carbon::now();
 
             $book->reviews()->detach($this->user->id);
@@ -515,13 +516,6 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $book->increment('count_view');
     }
 
-    /**
-     * Upload and save medias when user add new book
-     *
-     * @param array $medias
-     * @param Book $book
-     * @param MediaRepository $mediaRepository
-     */
     protected function uploadAndSaveMediasForBook(array $medias, Book $book, MediaRepository $mediaRepository)
     {
         $dataMedias = [];
@@ -582,23 +576,11 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         );
     }
 
-    /**
-     * Get book info by code
-     *
-     * @param string $code
-     * @return mixed
-     */
     protected function getBookByCode(string $code)
     {
         return $this->model()->whereCode($code)->first();
     }
 
-    /**
-     * Add owner book in owners table
-     *
-     * @param \App\Eloquent\Book $book
-     * @return void
-     */
     private function addOwnerBook(Book $book)
     {
         $book->owners()->detach($this->user->id);

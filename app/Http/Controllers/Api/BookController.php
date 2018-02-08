@@ -97,12 +97,13 @@ class BookController extends ApiController
             $data = $this->repository->getBooksByFields($relations, $this->select, $field, [], $officeId);
 
             $this->compacts['items'] = $this->reFormatPaginate($data);
-        });
+        }, __FUNCTION__);
     }
 
     public function show($id)
     {
         $this->compacts['item'] = $this->repository->show($id);
+
         return $this->jsonRender();
     }
 
@@ -112,7 +113,7 @@ class BookController extends ApiController
 
         return $this->doAction(function () use ($data, $mediaRepository) {
             $this->compacts['item'] = $this->repository->store($data, $mediaRepository);
-        });
+        }, __FUNCTION__);
     }
 
     public function requestUpdate(UpdateRequest $request, $id, MediaRepository $mediaRepository)
@@ -182,7 +183,7 @@ class BookController extends ApiController
             $book = $this->repository->findOrfail($data['item']['book_id']);
 
             $this->repository->booking($book, $data);
-        });
+        }, __FUNCTION__);
     }
 
     public function approve($bookId, ApproveRequest $request)
@@ -194,7 +195,7 @@ class BookController extends ApiController
             $this->before('update', $book);
 
             $this->repository->approve($book, $data['item']);
-        });
+        }, __FUNCTION__);
     }
 
     public function sortBy()
@@ -207,17 +208,19 @@ class BookController extends ApiController
     public function review(ReviewRequest $request, $bookId)
     {
         $data = $request->item;
+
         return $this->doAction(function () use ($bookId, $data) {
             $this->repository->review($bookId, $data);
-        });
+        }, __FUNCTION__);
     }
 
     public function reviewNew(ReviewRequest $request, $bookId)
     {
         $data = $request->item;
+
         return $this->doAction(function () use ($bookId, $data) {
             $this->repository->reviewNew($bookId, $data);
-        });
+        }, __FUNCTION__);
     }
 
     public function filter(BookFilterRequest $request)
@@ -345,7 +348,7 @@ class BookController extends ApiController
             $this->before('delete', $book);
 
             $this->repository->removeOwner($book);
-        });
+        }, __FUNCTION__);
     }
 
     public function uploadMedia(UploadMediaRequest $request, MediaRepository $mediaRepository)
