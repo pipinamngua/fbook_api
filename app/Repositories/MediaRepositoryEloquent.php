@@ -79,6 +79,10 @@ class MediaRepositoryEloquent extends AbstractRepositoryEloquent implements Medi
         }
     }
 
+    public function findImage($book_id) {
+        return $this->model()->where('target_id', $book_id)->get();
+    }
+
     public function updateEditMedias(Model $relation, array $files, $path)
     {
         if (isset($files) && count($files)) {

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Contracts\Repositories\ReviewRepository;
 use App\Contracts\Repositories\CommentRepository;
 use App\Contracts\Repositories\VoteRepository;
+use App\Contracts\Repositories\BookRepository;
+use App\Contracts\Repositories\MediaRepository;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\Book\CommentRequest;
 
@@ -24,13 +26,19 @@ class ReviewController extends ApiController
         }, __FUNCTION__);
     }
 
-    public function reviewDetails(VoteRepository $voteRepository, $reviewId, $userId)
-    {
-
-        return $this->doAction(function () use ($voteRepository, $reviewId, $userId) {
+    public function reviewDetails(
+        VoteRepository $voteRepository,
+        BookRepository $bookRepository,
+        MediaRepository $mediaRepository,
+        $reviewId,
+        $userId
+    ) {
+        return $this->doAction(function () use ($voteRepository, $bookRepository, $mediaRepository, $reviewId, $userId) {
             $review = $this->repository->reviewDetails($reviewId, $userId);
             $currentUser = $voteRepository->checkUserVoted($userId, $reviewId);
-
+            $currentUser = $voteRepository->checkUserVoted($userId, $reviewId);
+            $book = $bookRepository->show($review->book_id);
+            $media = $mediaRepository->findImage($review->book_id);
             $userVoted = $currentUser ? $currentUser : null;
             $comments = [];
             foreach ($review->comments as $comment) {
@@ -49,6 +57,8 @@ class ReviewController extends ApiController
                 'up_vote' => $review->up_vote,
                 'down_vote' => $review->down_vote,
                 'current_vote' => $userVoted,
+                'book' => $book,
+                'media' => $media,
                 'comments' => $comments
             ];
         }, __FUNCTION__);

@@ -42,9 +42,9 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
     ]);
 
     Route::get('search-books', 'SearchController@search');
-
     Route::get('search-books-detail/{book_id}', 'SearchController@detail');
-
+    Route::get('books/review-details/{reviewId}/{userId}', ['as' => 'books.review.detail',
+            'uses' => 'ReviewController@reviewDetails']);
     Route::group(['middleware' => 'fapi'], function () {
         Route::get('user-profile', ['as' => 'user.profile', 'uses' => 'UserController@getUserFromToken']);
         Route::get('user/books/waiting_approve', ['as' => 'user.books.waiting-approve', 'uses' => 'UserController@getListWaitingApprove']);
@@ -60,8 +60,6 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::get('users/books/owned', ['as' => 'users.books.owned', 'uses' => 'UserController@ownedBooks']);
         Route::delete('reviews/delete/{id}', ['as' => 'users.review.delete',
             'uses' => 'ReviewController@delete']);
-        Route::get('books/review-details/{revieId}/{userId}', ['as' => 'books.review.detail',
-            'uses' => 'ReviewController@reviewDetails']);
         Route::post('books/review-details/comment', ['as' => 'books.review.comment',
              'uses' => 'ReviewController@commentReview']);
         Route::post('books/vote', ['as' => 'books.review.vote', 'uses' => 'ReviewController@vote']);
