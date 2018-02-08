@@ -107,5 +107,6 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::get('users', 'UserController@getUserList');
         Route::post('users/search', 'UserController@searchUser');
         Route::get('users/detail/{id}', 'UserController@getUserDetail');
+        Route::get('books', 'BookController@getBookList');
     });
 });
