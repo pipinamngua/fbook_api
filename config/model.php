@@ -118,4 +118,8 @@ return [
         'by_staff_code' => 1,
         'by_email' => 2
     ],
+    'filter_book' => [
+        'by_title' => 1,
+        'by_author' => 2
+    ],
 ];

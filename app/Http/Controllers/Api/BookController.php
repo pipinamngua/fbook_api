@@ -175,6 +175,17 @@ class BookController extends ApiController
         });
     }
 
+    public function searchAdmin(Request $request)
+    {
+        $data = $request->only(['key', 'type', 'page']);
+
+        return $this->getData(function() use ($data) {
+            $data = $this->repository->searchBook($data);
+
+            $this->compacts['items'] = $this->reFormatPaginate($data);
+        });
+    }
+
     public function booking(BookingRequest $request)
     {
         $data = $request->all();
