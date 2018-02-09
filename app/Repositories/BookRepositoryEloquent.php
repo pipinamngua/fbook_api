@@ -12,6 +12,7 @@ use App\Eloquent\Notification;
 use App\Contracts\Repositories\BookRepository;
 use App\Contracts\Repositories\UserRepository;
 use App\Contracts\Repositories\MediaRepository;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Traits\Repositories\UploadableTrait;
@@ -1002,6 +1003,26 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         return $this->model()
             ->select($dataSelect)
+            ->with(array_merge($withRelation, ['office']))
+            ->withCount('owners')
+            ->orderBy('created_at', 'ASC')
+            ->paginate(config('paginate.default'));
+    }
+
+    public function searchBook($data, $dataSelect = ['*'], $withRelation = [])
+    {
+        Paginator::currentPageResolver(function() use ($data) {
+            return $data['page'];
+        });
+        if ($data['type'] == config('model.filter_book.by_title')) {
+            $query = $this->model()
+                ->where('title', 'like', '%' . $data['key'] . '%');
+        } else {
+            $query = $this->model()
+                ->where('author', 'like', '%' . $data['key'] . '%');
+        }
+
+        return $query->select($dataSelect)
             ->with(array_merge($withRelation, ['office']))
             ->withCount('owners')
             ->orderBy('created_at', 'ASC')
