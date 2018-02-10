@@ -46,4 +46,6 @@ interface BookRepository extends AbstractRepository
     public function approveRequestUpdateBook($updateBookId);
 
     public function deleteRequestUpdateBook($updateBookId);
+
+    public function countHaveBook();
 }
