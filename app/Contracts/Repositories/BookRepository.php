@@ -48,4 +48,6 @@ interface BookRepository extends AbstractRepository
     public function deleteRequestUpdateBook($updateBookId);
 
     public function countHaveBook();
+    
+    public function destroyBook(Book $deleteBook);
 }
