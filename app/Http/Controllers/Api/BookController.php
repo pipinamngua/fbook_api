@@ -435,4 +435,24 @@ class BookController extends ApiController
             $this->compacts['item'] = $this->repository->countHaveBook();
         });
     }
+
+    public function destroyBook($id)
+    {
+        try {
+            return $this->doAction(function () use ($id) {
+                $deleteBook = $this->repository->findOrFail($id);
+
+                $this->repository->destroyBook($deleteBook);
+            }, __FUNCTION__);
+
+        } catch (ModelNotFoundException $e) {
+            Log::error($e->getMessage());
+
+            throw new NotFoundException();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new UnknownException($e->getMessage(), $e->getCode());
+        }
+    }
 }
