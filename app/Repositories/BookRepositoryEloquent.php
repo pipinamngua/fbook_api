@@ -1028,4 +1028,9 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             ->orderBy('created_at', 'ASC')
             ->paginate(config('paginate.default'));
     }
+
+    public function countHaveBook()
+    {
+        return $this->model()->get()->count();
+    }
 }

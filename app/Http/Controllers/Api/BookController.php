@@ -428,4 +428,11 @@ class BookController extends ApiController
             $this->compacts['items'] = $this->reFormatPaginate($data);
         });
     }
+
+    public function countBook()
+    {
+        return $this->getData(function() {
+            $this->compacts['item'] = $this->repository->countHaveBook();
+        });
+    }
 }
