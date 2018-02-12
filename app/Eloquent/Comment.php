@@ -33,6 +33,6 @@ class Comment extends Model
 
     public function getTimeAgoAttribute()
     {
-        return \Carbon\Carbon::parse($this->attribute['created_at'])->diffForHumans();
+        return \Carbon\Carbon::parse($this->created_at)->diffForHumans();
     }
 }
