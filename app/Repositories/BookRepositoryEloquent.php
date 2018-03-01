@@ -938,7 +938,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                 }
             }
             Event::fire('androidNotification', config('model.notification.admin.approve_request_update_book'));
-            $message = sprintf(translate('notification.approve_request_update_book'), $this->user->name, $book->title);
+            $message = sprintf(translate('notification.approve_request_update_book'), $this->user->name, $updateBook->title);
             event(new NotificationHandler($message, $updateBook->user_id, config('model.notification.admin.approve_request_update_book')));
             Event::fire('notification', [
                 [
@@ -967,7 +967,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             $updateBook = app(UpdateBook::class)->findOrFail($updateBookId);
 
             Event::fire('androidNotification', config('model.notification.admin.delete_request_update_book'));
-            $message = sprintf(translate('notification.delete_request_edit_book'), $this->user->name, $book->title);
+            $message = sprintf(translate('notification.delete_request_edit_book'), $this->user->name, $updateBook->title);
             event(new NotificationHandler($message, $updateBook->user_id, config('model.notification.admin.delete_request_update_book')));
             Event::fire('notification', [
                 [
