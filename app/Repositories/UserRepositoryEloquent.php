@@ -421,7 +421,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
                     $query->with(['category', 'office', 'media']);
                 }
             ])
-            ->orderBy('created_at', 'ASC')
+            ->orderBy('created_at', 'DESC')
             ->paginate(config('paginate.default'));
     }
 
