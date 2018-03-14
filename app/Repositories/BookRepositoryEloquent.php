@@ -238,17 +238,101 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         );
     }
 
+    protected function getLatestBooksInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
+    {
+        $input = $this->getDataInput($attribute);
+
+        return $this->model()
+            ->select($dataSelect)
+            ->with($with)
+            ->getBookByOffice($officeId)
+            ->orderBy($input['sort']['field'], $input['sort']['type'])
+            ->paginate($limit ?: config('paginate.default'));
+    }
+    
+    protected function getDataInputCountView($attribute = [])
+    {
+        $sort = [
+            'field' => 'count_view',
+            'type' => 'desc'
+        ];
+        $filters = [];
+
+        if (isset($attribute['sort']['by']) && $attribute['sort']['by']) {
+            $sort['field'] = $attribute['sort']['by'];
+        }
+
+        if (isset($attribute['sort']['order_by']) && $attribute['sort']['order_by']) {
+            $sort['type'] = $attribute['sort']['order_by'];
+        }
+
+        if (isset($attribute['filters']) && $attribute['filters']) {
+            $filters = $attribute['filters'];
+        }
+
+        return compact('sort', 'filters');
+    }
+    
+    protected function getDataInputRating($attribute = [])
+    {
+        $sort = [
+            'field' => 'avg_star',
+            'type' => 'desc'
+        ];
+        $filters = [];
+
+        if (isset($attribute['sort']['by']) && $attribute['sort']['by']) {
+            $sort['field'] = $attribute['sort']['by'];
+        }
+
+        if (isset($attribute['sort']['order_by']) && $attribute['sort']['order_by']) {
+            $sort['type'] = $attribute['sort']['order_by'];
+        }
+
+        if (isset($attribute['filters']) && $attribute['filters']) {
+            $filters = $attribute['filters'];
+        }
+
+        return compact('sort', 'filters');
+    }
+
+    protected function getBooksByCountViewInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
+    {
+        $input = $this->getDataInputCountView($attribute);
+
+        return $this->model()
+            ->select($dataSelect)
+            ->with($with)
+            ->where(config('model.filter_books.view.field'), '>', 0)
+            ->getBookByOffice($officeId)
+            ->orderBy($input['sort']['field'], $input['sort']['type'])
+            ->paginate($limit ?: config('paginate.default'));
+    }
+
+    protected function getBooksByRatingInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
+    {
+        $input = $this->getDataInputRating($attribute);
+
+        return $this->model()
+            ->select($dataSelect)
+            ->with($with)
+            ->where(config('model.filter_books.rating.field'), '>', 0)
+            ->getBookByOffice($officeId)
+            ->orderBy($input['sort']['field'], $input['sort']['type'])
+            ->paginate($limit ?: config('paginate.default'));
+    }
+    
     public function getBooksByFields($with = [], $dataSelect = ['*'], $field, $attribute = [], $officeId = '')
     {
         switch ($field) {
             case config('model.filter_books.view.key'):
-                return $this->getBooksByCountView($with, $dataSelect,'', $attribute, $officeId);
+                return $this->getBooksByCountViewInDetail($with, $dataSelect,'', $attribute, $officeId);
 
             case config('model.filter_books.latest.key'):
-                return $this->getLatestBooks($with, $dataSelect, '', $attribute, $officeId);
+                return $this->getLatestBooksInDetail($with, $dataSelect, '', $attribute, $officeId);
 
             case config('model.filter_books.rating.key'):
-                return $this->getBooksByRating($with, $dataSelect, '', $attribute, $officeId);
+                return $this->getBooksByRatingInDetail($with, $dataSelect, '', $attribute, $officeId);
 
             case config('model.filter_books.waiting.key'):
                 return $this->getBooksByWaiting($with, $dataSelect, '', $attribute, $officeId);

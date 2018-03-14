@@ -103,14 +103,7 @@ class Book extends Model
     public function scopeGetData($query, $field, $filters = [], $orderBy = 'DESC', $officeId = '')
     {
         return $query->where(function ($query) use ($field, $filters, $officeId) {
-            if ($field == config('model.filter_books.view.field')) {
-                $query->where(config('model.filter_books.view.field'), '>', 0);
-            }
-
-            if ($field == config('model.filter_books.rating.field')) {
-                $query->where(config('model.filter_books.rating.field'), '>', 0);
-            }
-
+            
             if ($filters) {
                 foreach ($filters as $value) {
                     foreach ($value as $filter => $filterIds) {
