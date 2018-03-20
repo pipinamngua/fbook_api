@@ -22,7 +22,12 @@ class CategoryController extends ApiController
 
     public function store(CreateCategoryRequest $request)
     {
-        $data = $request->only(['name', 'description']);
+        $data = $request->only([
+            'name_vi',
+            'name_en',
+            'name_jp',
+            'description',
+        ]);
 
         return $this->doAction(function() use ($data) {
             $this->compacts['items'] = $this->repository->store($data);
@@ -31,7 +36,12 @@ class CategoryController extends ApiController
 
     public function update(CreateCategoryRequest $request, $categoryId)
     {
-        $data = $request->only(['name', 'description']);
+        $data = $request->only([
+            'name_vi',
+            'name_en',
+            'name_jp',
+            'description',
+        ]);
 
         return $this->doAction(function() use ($data, $categoryId) {
             $category = $this->repository->findOrFail($categoryId);
