@@ -65,9 +65,7 @@ class CategoryRepositoryEloquent extends AbstractRepositoryEloquent implements C
         });
 
         return $this->model()
-            ->where('name_vi', 'like', '%' . $data['key'] . '%')
-            ->where('name_en', 'like', '%' . $data['key'] . '%')
-            ->where('name_jp', 'like', '%' . $data['key'] . '%')
+            ->where('name', 'like', '%' . $data['key'] . '%')
             ->latest()
             ->paginate($limit ?: config('paginate.default'));
     }

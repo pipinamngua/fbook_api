@@ -296,9 +296,7 @@ class BookController extends ApiController
                 'prev_page' => $currentPage - 1 ?: null,
                 'category' => [
                     'id' => $category->id,
-                    'name_vi' => $category->name_vi,
-                    'name_en' => $category->name_en,
-                    'name_jp' => $category->name_jp,
+                    'name' => $category->name,
                     'data' => $bookCategory->items(),
                 ]
             ];
