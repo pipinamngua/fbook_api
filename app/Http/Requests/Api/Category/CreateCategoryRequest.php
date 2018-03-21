@@ -24,7 +24,9 @@ class CreateCategoryRequest extends AbstractRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:3|max:100',
+            'name_vi' => 'required|min:3|max:100',
+            'name_en' => 'required|min:3|max:100',
+            'name_jp' => 'required|min:3|max:100',
         ];
     }
 }
