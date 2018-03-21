@@ -57,7 +57,9 @@ class BookController extends ApiController
 
     protected $categorySelect = [
         'id',
-        'name',
+        'name_vi',
+        'name_en',
+        'name_jp',
     ];
 
     protected $officeSelect = [
@@ -340,7 +342,9 @@ class BookController extends ApiController
                 'prev_page' => $currentPage - 1 ?: null,
                 'category' => [
                     'id' => $category->id,
-                    'name' => $category->name,
+                    'name_vi' => $category->name_vi,
+                    'name_en' => $category->name_en,
+                    'name_jp' => $category->name_jp,
                     'data' => $bookCategory->items(),
                 ]
             ];
