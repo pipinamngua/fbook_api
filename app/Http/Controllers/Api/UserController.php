@@ -48,7 +48,9 @@ class UserController extends ApiController
 
     protected $categorySelect = [
         'id',
-        'name',
+        'name_vi',
+        'name_en',
+        'name_jp',
     ];
 
     protected $officeSelect = [
