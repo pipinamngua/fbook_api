@@ -163,6 +163,18 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             ->paginate($limit ?: config('paginate.default'));
     }
 
+    protected function getLatestBooksInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
+    {
+        $input = $this->getDataInput($attribute);
+
+        return $this->model()
+            ->select($dataSelect)
+            ->with($with)
+            ->getBookByOffice($officeId)
+            ->orderBy($input['sort']['field'], $input['sort']['type'])
+            ->paginate($limit ?: config('paginate.default'));
+    }
+
     protected function getBooksByCountView($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
     {
         $input = $this->getDataInput($attribute);
@@ -176,7 +188,33 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             ->paginate($limit ?: config('paginate.default'));
     }
 
+    protected function getBooksByCountViewInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
+    {
+        $input = $this->getDataInput($attribute);
+
+        return $this->model()
+            ->select($dataSelect)
+            ->with($with)
+            ->getData(config('model.filter_books.view.field'), $input['filters'])
+            ->getBookByOffice($officeId)
+            ->orderBy($input['sort']['field'], $input['sort']['type'])
+            ->paginate($limit ?: config('paginate.default'));
+    }
+
     protected function getBooksByRating($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
+    {
+        $input = $this->getDataInput($attribute);
+
+        return $this->model()
+            ->select($dataSelect)
+            ->with($with)
+            ->getData(config('model.filter_books.rating.field'), $input['filters'])
+            ->getBookByOffice($officeId)
+            ->orderBy($input['sort']['field'], $input['sort']['type'])
+            ->paginate($limit ?: config('paginate.default'));
+    }
+
+    protected function getBooksByRatingInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
     {
         $input = $this->getDataInput($attribute);
 
@@ -807,7 +845,6 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $userId = $attribute['user_id'];
         $key = $attribute['key'];
         $ownerBook = $book->owners()->where('user_id', $this->user->id)->first();
-        
         if ($key == config('settings.book_key.approve')) {
             if ($ownerBook->pivot->status == config('model.book.status.available')) {
                 $waitingList = $book->usersWaiting()
@@ -858,7 +895,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                         'status' => config('model.book_user.status.returned'),
                     ]);
                     Event::fire('androidNotification', config('model.notification.approve_returning'));
-                    sprintf(translate('notification.approve_returning_book'), $this->user->name, $book->title);
+                    $message = sprintf(translate('notification.approve_returning_book'), $this->user->name, $book->title);
                     event(new NotificationHandler($message, $userId, config('model.notification.approve_returning')));
                     Event::fire('notification', [
                         [
