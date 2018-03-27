@@ -56,7 +56,8 @@
     "request_edit_book": "%s request edit book: %s",
     "approve_returning_book": "%s approve returning book: %s",
     "approve_request_update_book": "%s approve request update book: %s",
-    "delete_request_edit_book": "%s delete request edit book: %s"
+    "delete_request_edit_book": "%s delete request edit book: %s",
+    "waiting_book_borrowing": "%s waiting book borrowing %s"
   },
   "review": {
     "upvoted": "Your review was upvoted by %s",
