@@ -275,18 +275,6 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             config('model.book_user.status.returned'), $with, $dataSelect, $limit, $attribute, $officeId
         );
     }
-
-    protected function getLatestBooksInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
-    {
-        $input = $this->getDataInput($attribute);
-
-        return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate($limit ?: config('paginate.default'));
-    }
     
     protected function getDataInputCountView($attribute = [])
     {
@@ -332,32 +320,6 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         }
 
         return compact('sort', 'filters');
-    }
-
-    protected function getBooksByCountViewInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
-    {
-        $input = $this->getDataInputCountView($attribute);
-
-        return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->where(config('model.filter_books.view.field'), '>', 0)
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate($limit ?: config('paginate.default'));
-    }
-
-    protected function getBooksByRatingInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
-    {
-        $input = $this->getDataInputRating($attribute);
-
-        return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->where(config('model.filter_books.rating.field'), '>', 0)
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate($limit ?: config('paginate.default'));
     }
     
     public function getBooksByFields($with = [], $dataSelect = ['*'], $field, $attribute = [], $officeId = '')
