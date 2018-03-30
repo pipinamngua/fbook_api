@@ -56,7 +56,8 @@
       "request_edit_book": "%s yêu cầu chỉnh sửa cuốn sách: %s",
       "approve_returning_book": "%s phê duyệt sách trả lại: %s",
       "approve_request_update_book": "%s phê duyệt cuốn sách cập nhật yêu cầu: %s",
-      "delete_request_edit_book": "%s xóa yêu cầu chỉnh sửa cuốn sách: %s"
+      "delete_request_edit_book": "%s xóa yêu cầu chỉnh sửa cuốn sách: %s",
+      "waiting_book_borrowing": "%s chờ mượn sách %s"
     },
     "review": {
       "upvoted": "Bài đánh giá của bạn đã được upvoted bởi %s",
