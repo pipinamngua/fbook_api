@@ -24,6 +24,7 @@ use App\Events\NotificationHandler;
 use App\Contracts\Repositories\UserRepository;
 use App\Eloquent\User;
 use Log;
+use App\Eloquent\Book;
 
 class BookController extends ApiController
 {
@@ -171,8 +172,14 @@ class BookController extends ApiController
         $officeId = $request->get('office_id');
 
         return $this->getData(function () use ($data, $officeId) {
-            $this->compacts['items'] = $this->reFormatPaginate(
-                $this->repository->getDataSearch($data, ['image', 'category', 'office', 'owners'], $this->select, $officeId)
+            $this->compacts['titles'] = $this->reFormatPaginate(
+                $this->repository->getDataSearchTitle($data, ['image', 'category', 'office', 'owners'], $this->select, $officeId)
+            );
+            $this->compacts['authors'] = $this->reFormatPaginate(
+                $this->repository->getDataSearchAuthor($data, ['image', 'category', 'office', 'owners'], $this->select, $officeId)
+            );
+            $this->compacts['descriptions'] = $this->reFormatPaginate(
+                $this->repository->getDataSearchDescription($data, ['image', 'category', 'office', 'owners'], $this->select, $officeId)
             );
         });
     }
