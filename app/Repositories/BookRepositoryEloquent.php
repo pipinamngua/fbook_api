@@ -150,6 +150,57 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             ->paginate(config('paginate.default'));
     }
 
+    public function getDataSearchTitle(array $attribute, $with = [], $dataSelect = ['*'], $officeId = '')
+    {
+        $input = $this->getDataInput($attribute);
+
+        return $this->model()
+            ->select($dataSelect)
+            ->with($with)
+            ->where(function ($query) use ($attribute, $officeId) {
+                if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
+                    $query->where('title', 'LIKE', '%' . $attribute['search']['keyword'] . '%');
+                }
+            })
+            ->getBookByOffice($officeId)
+            ->orderBy($input['sort']['field'], $input['sort']['type'])
+            ->paginate(config('paginate.default'));
+    }
+
+    public function getDataSearchAuthor(array $attribute, $with = [], $dataSelect = ['*'], $officeId = '')
+    {
+        $input = $this->getDataInput($attribute);
+
+        return $this->model()
+            ->select($dataSelect)
+            ->with($with)
+            ->where(function ($query) use ($attribute, $officeId) {
+                if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
+                    $query->where('author', 'LIKE', '%' . $attribute['search']['keyword'] . '%');
+                }
+            })
+            ->getBookByOffice($officeId)
+            ->orderBy($input['sort']['field'], $input['sort']['type'])
+            ->paginate(config('paginate.default'));
+    }
+
+    public function getDataSearchDescription(array $attribute, $with = [], $dataSelect = ['*'], $officeId = '')
+    {
+        $input = $this->getDataInput($attribute);
+
+        return $this->model()
+            ->select($dataSelect)
+            ->with($with)
+            ->where(function ($query) use ($attribute, $officeId) {
+                if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
+                    $query->where('description', 'LIKE', '%' . $attribute['search']['keyword'] . '%');
+                }
+            })
+            ->getBookByOffice($officeId)
+            ->orderBy($input['sort']['field'], $input['sort']['type'])
+            ->paginate(config('paginate.default'));
+    }
+
     protected function getLatestBooks($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
     {
         $input = $this->getDataInput($attribute);

@@ -13,6 +13,12 @@ interface BookRepository extends AbstractRepository
 
     public function getDataSearch(array $attribute, $with = [], $dataSelect = ['*'], $officeId = '');
 
+    public function getDataSearchTitle(array $attribute, $with = [], $dataSelect = ['*'], $officeId = '');
+
+    public function getDataSearchAuthor(array $attribute, $with = [], $dataSelect = ['*'], $officeId = '');
+
+    public function getDataSearchDescription(array $attribute, $with = [], $dataSelect = ['*'], $officeId = '');
+
     public function booking(Book $book, array $data);
 
     public function review($bookId, array $data);
