@@ -122,4 +122,7 @@ return [
         'by_title' => 1,
         'by_author' => 2
     ],
+    'top_owner' => [
+        'top' => 3
+    ],
 ];

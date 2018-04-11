@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Contracts\Repositories\BookRepository;
 use App\Http\Requests\Api\HomeFilterRequest;
+use App\Contracts\Repositories\OwnerRepository;
 use Illuminate\Http\Request;
 
 class HomeController extends ApiController
@@ -47,16 +48,21 @@ class HomeController extends ApiController
     ];
 
     protected $bookRepository;
+    protected $ownerRepository;
 
-    public function __construct(BookRepository $bookRepository)
+    public function __construct(BookRepository $bookRepository, OwnerRepository $ownerRepository)
     {
         parent::__construct();
         $this->bookRepository = $bookRepository;
+        $this->ownerRepository = $ownerRepository;
     }
 
     public function index(Request $request)
     {
         $officeId = $request->get('office_id');
+        $top = $this->getData(function() {
+            $this->compacts['item'] = $this->ownerRepository->topOwnBook();
+        });
 
         $relations = [
             'image' => function ($q) {
@@ -70,8 +76,8 @@ class HomeController extends ApiController
             },
         ];
 
-        return $this->getData(function() use ($relations, $officeId){
-            $this->compacts['items'] = $this->bookRepository->getDataInHomepage($relations, $this->bookSelect, $officeId);
+        return $this->getData(function() use ($relations, $officeId, $top){
+            $this->compacts['items'] = $this->bookRepository->getDataInHomepage($relations, $this->bookSelect, $officeId, $top);
         });
     }
 
