@@ -72,7 +72,7 @@ class CategoryRepositoryEloquent extends AbstractRepositoryEloquent implements C
             ->paginate($limit ?: config('paginate.default'));
     }
 
-    public function show($categoryId)
+    public function edit($categoryId)
     {
         try {
             return $this->model()->findOrFail($categoryId);

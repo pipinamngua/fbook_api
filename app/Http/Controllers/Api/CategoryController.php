@@ -77,10 +77,11 @@ class CategoryController extends ApiController
         });
     }
 
-    public function show($categoryId)
+    public function edit($categoryId)
     {
-        $this->compacts['item'] = $this->repository->show($categoryId);
+        return $this->doAction(function () use ($categoryId) {
 
-        return $this->jsonRender();
+            $this->compacts['item'] = $this->repository->edit($categoryId);
+        }, __FUNCTION__);
     }
 }
