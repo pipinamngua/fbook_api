@@ -88,6 +88,9 @@ class BookController extends ApiController
             'owners' => function ($q) {
                 $q->select($this->ownerSelect);
             },
+            'category' => function ($q) {
+                $q->select($this->categorySelect);
+            },
             'image' => function ($q) {
                 $q->select($this->imageSelect);
             },
@@ -254,6 +257,9 @@ class BookController extends ApiController
             'owners' => function ($q) {
                 $q->select($this->ownerSelect);
             },
+            'category' => function ($q) {
+                $q->select($this->categorySelect);
+            },
             'image' => function ($q) {
                 $q->select($this->imageSelect);
             },
@@ -284,6 +290,9 @@ class BookController extends ApiController
         $relations = [
             'owners' => function ($q) {
                 $q->select($this->ownerSelect);
+            },
+            'category' => function ($q) {
+                $q->select($this->categorySelect);
             },
             'image' => function ($q) {
                 $q->select($this->imageSelect);
@@ -328,6 +337,9 @@ class BookController extends ApiController
         $relations = [
             'owners' => function ($q) {
                 $q->select($this->ownerSelect);
+            },
+            'category' => function ($q) {
+                $q->select($this->categorySelect);
             },
             'image' => function ($q) {
                 $q->select($this->imageSelect);
@@ -398,6 +410,9 @@ class BookController extends ApiController
         $relations = [
             'owners' => function ($q) {
                 $q->select($this->ownerSelect);
+            },
+            'category' => function ($q) {
+                $q->select($this->categorySelect);
             },
             'image' => function ($q) {
                 $q->select($this->imageSelect);

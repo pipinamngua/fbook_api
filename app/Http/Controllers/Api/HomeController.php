@@ -32,7 +32,9 @@ class HomeController extends ApiController
 
     protected $categorySelect = [
         'id',
-        'name',
+        'name_vi',
+        'name_en',
+        'name_jp',
     ];
 
     protected $officeSelect = [
@@ -67,6 +69,9 @@ class HomeController extends ApiController
         $relations = [
             'image' => function ($q) {
                 $q->select($this->imageSelect);
+            },
+            'category' => function ($q) {
+                $q->select($this->categorySelect);
             },
             'owners'=> function ($q) {
                 $q->select($this->ownerSelect);
