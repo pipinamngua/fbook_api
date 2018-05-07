@@ -75,7 +75,10 @@ return [
         'doan.thuy.phuong@framgia.com',
         'pham.thu.hang@framgia.com',
         'nguyen.huu.su@framgia.com',
-        'phan.van.khoi@framgia.com'
+        'phan.van.khoi@framgia.com',
+        'vuong.minh.thai@framgia.com',
+        'bui.thi.hieu@framgia.com',
+        'hoang.viet.an@framgia.com'
     ],
     'admin' => 'admin',
     'user' => 'user',
