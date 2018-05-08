@@ -1137,7 +1137,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         return $this->model()
             ->select($dataSelect)
-            ->with(array_merge($withRelation, ['office']))
+            ->with(array_merge($withRelation, ['office', 'image']))
             ->withCount('owners')
             ->orderBy('created_at', 'ASC')
             ->paginate(config('paginate.default'));
