@@ -471,4 +471,10 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
             ->withCount('usersFollowing')
             ->first();
     }
+
+    public function addReputation($userId, $point) {
+        $user = $this->model()->findOrFail($userId);
+        $user->reputation_point = $user->reputation_point + $point;
+        $user->save();
+    }
 }

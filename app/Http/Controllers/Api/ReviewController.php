@@ -7,6 +7,7 @@ use App\Contracts\Repositories\CommentRepository;
 use App\Contracts\Repositories\VoteRepository;
 use App\Contracts\Repositories\BookRepository;
 use App\Contracts\Repositories\MediaRepository;
+use App\Contracts\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\Book\CommentRequest;
 use App\Http\Requests\Api\Book\EditCommentRequest;
@@ -54,6 +55,7 @@ class ReviewController extends ApiController
 
             $this->compacts['items'] = [
                 'id' => $review->id,
+                'user_id' => $review->user_id,
                 'title' => $review->title,
                 'content' => $review->content,
                 'up_vote' => $review->up_vote,
@@ -66,9 +68,9 @@ class ReviewController extends ApiController
         }, __FUNCTION__);
     }
 
-    public function vote(Request $request, VoteRepository $voteRepository)
+    public function vote(Request $request, VoteRepository $voteRepository, UserRepository $userRepository)
     {
-        return $this->doAction(function () use ($request, $voteRepository) {
+        return $this->doAction(function () use ($request, $voteRepository, $userRepository) {
 
             $check = $voteRepository->checkVoted($request->userId, $request->reviewId);
 
@@ -80,6 +82,10 @@ class ReviewController extends ApiController
                 } else {
                     $voteRepository->changeStatus($request->userId, $request->reviewId, $request->status);
                     if ($request->status == config('model.request_vote.up_vote')) {
+                        $checkUpVoted = $voteRepository->checkUpVoted($request->userId, $request->reviewId);
+                        if (!$checkUpVoted) {
+                            $userRepository->addReputation($request->reviewerId, config('model.reputation.be_upvoted'));
+                        }
                         $this->repository->increaseVote($request->reviewId, self::RE_VOTE_NUMBER);
                     } else {
                         $this->repository->decreaseVote($request->reviewId, self::RE_VOTE_NUMBER);
@@ -95,6 +101,7 @@ class ReviewController extends ApiController
                 }
                 if ($request->status == config('model.request_vote.up_vote')) {
                     $this->repository->increaseVote($request->reviewId);
+                    $userRepository->addReputation($request->reviewerId, config('model.reputation.be_upvoted'));
                 } else {
                     $this->repository->decreaseVote($request->reviewId);
                 }
