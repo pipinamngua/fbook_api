@@ -37,4 +37,6 @@ interface UserRepository extends AbstractRepository
     public function updateViewNotificationsAll();
 
     public function getWaitingApproveEditBook();
+
+    public function addReputation($userId, $point);
 }

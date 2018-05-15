@@ -66,4 +66,13 @@ class VoteRepositoryEloquent extends AbstractRepositoryEloquent implements VoteR
 
         return false;
     }
+
+    public function checkUpVoted($userId, $reviewId)
+    {
+        return $this->model()->where([
+            ['user_id', '=', $userId],
+            ['review_id', '=', $reviewId],
+            ['status', '=', config('model.request_vote.up_vote')],
+        ])->first();
+    }
 }

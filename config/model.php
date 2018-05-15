@@ -125,4 +125,11 @@ return [
     'top_owner' => [
         'top' => 3
     ],
+    'reputation' => [
+        'share_book' => 5,
+        'add_owner' => 5,
+        'approve_borrow' => 3,
+        'be_upvoted' => 1,
+        'be_followed' => 1
+    ],
 ];
