@@ -25,6 +25,10 @@ return [
             'reading' => 2,
             'returning' => 3,
             'returned' => 4,
+        ],
+        'approved' => [
+            'approved_before' => 1,
+            'never_approve' => 0,
         ]
     ],
     'book_user_status_cancel' => 5,
@@ -124,5 +128,16 @@ return [
     ],
     'top_owner' => [
         'top' => 3
+    ],
+    'reputation' => [
+        'share_book' => 5,
+        'add_owner' => 5,
+        'approve_borrow' => 3,
+        'be_upvoted' => 1,
+        'be_followed' => 1
+    ],
+    'status_owner' => [
+        'added' => 1,
+        'not_added' => 0
     ],
 ];

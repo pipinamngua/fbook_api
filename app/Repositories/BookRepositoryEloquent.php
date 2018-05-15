@@ -853,6 +853,18 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         return $book->load('category', 'office', 'media');
     }
 
+    public function checkApprove(Book $book, $attribute = [])
+    {
+        $userId = $attribute['user_id'];
+        $approve = $book->users()
+            ->select('approved')
+            ->wherePivot('user_id', $userId)
+            ->wherePivot('owner_id', $this->user->id)
+            ->first();
+
+        return $approve;
+    }
+
     public function approve(Book $book, $attribute = [])
     {
         $userId = $attribute['user_id'];
@@ -873,6 +885,11 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                         ->wherePivot('status', config('model.book_user.status.waiting'))
                         ->updateExistingPivot($userId, [
                             'status' => config('model.book_user.status.reading'),
+                        ]);
+                    $book->users()
+                        ->wherePivot('owner_id', $this->user->id)
+                        ->updateExistingPivot($userId, [
+                            'approved' => config('model.book_user.approved.approved_before'),
                         ]);
                     $book->users()
                         ->wherePivot('owner_id', '<>', $this->user->id)

@@ -209,15 +209,24 @@ class BookController extends ApiController
         }, __FUNCTION__);
     }
 
-    public function approve($bookId, ApproveRequest $request)
+    public function approve($bookId, ApproveRequest $request, UserRepository $userRepository)
     {
         $data = $request->all();
+        $key = $data['item']['key'];
 
-        return $this->doAction(function () use ($data, $bookId) {
+        return $this->doAction(function () use ($data, $bookId, $key, $userRepository) {
             $book = $this->repository->findOrfail($bookId);
             $this->before('update', $book);
+            $check = $this->repository->checkApprove($book, $data['item'])->approved;
 
             $this->repository->approve($book, $data['item']);
+
+            if ($key === config('settings.book_key.approve')) {
+                if ($check === config('model.book_user.approved.never_approve')) {
+                    $userRepository->addReputation($this->user->id, config('model.reputation.approve_borrow'));
+                    $this->compacts['point'] = config('model.reputation.approve_borrow');
+                }
+            }
         }, __FUNCTION__);
     }
 
