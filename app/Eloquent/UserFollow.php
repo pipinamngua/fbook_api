@@ -3,9 +3,12 @@
 namespace App\Eloquent;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserFollow extends Model
 {
+    use SoftDeletes;
+    
     protected $table = 'user_follow';
 
     /**

@@ -38,4 +38,9 @@ class Notification extends Model
     {
         return $this->belongsTo(User::class, 'user_receive_id');
     }
+
+    public function follow()
+    {
+        return $this->belongsTo(UserFollow::class, 'user_receive_id', 'following_id');
+    }
 }
