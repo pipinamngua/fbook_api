@@ -103,6 +103,7 @@ return [
             'approve_request_update_book' => 'approve_edit_book',
             'delete_request_update_book' => 'delete_edit_book',
         ],
+        'follow' => 'follow',
     ],
     'review_messeges' => [
         'can_not_vote' => 'can_not_vote',

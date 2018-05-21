@@ -284,7 +284,8 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
                 },
                 'userReceive' => function($query) {
                     $query->select($this->userSelect);
-                }
+                },
+                'follow'
             ])
             ->where('user_receive_id', $this->user->id)
             ->orderBy('created_at', 'DESC')
@@ -322,7 +323,8 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
                 },
                 'userReceive' => function($query) {
                     $query->select($this->userSelect);
-                }
+                },
+                'follow'
             ])
             ->where('user_receive_id', $this->user->id)
             ->orderBy('created_at', 'DESC')
@@ -341,11 +343,37 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
             ->first();
         if ($follow) {
             $follow->delete();
+            app(Notification::class)->where('user_send_id', $this->user->id)
+                ->where('user_receive_id', $userId)
+                ->where('type', config('model.notification.follow'))
+                ->delete();
         } else {
-            app(UserFollow::class)->create([
-                'following_id' => $userId,
-                'follower_id' => $this->user->id,
-            ]);
+            $checkFollowed = app(UserFollow::class)->withTrashed()
+                ->where('following_id', $userId)
+                ->where('follower_id', $this->user->id)
+                ->whereNotNull('deleted_at')
+                ->first();
+            if ($checkFollowed) {
+                $checkFollowed->restore();
+                app(Notification::class)->create([
+                    'user_send_id' => $this->user->id,
+                    'user_receive_id' => $userId,
+                    'target_id' => $checkFollowed->id,
+                    'type' => config('model.notification.follow'),
+                ]);
+            } else {
+                $userFollow = app(UserFollow::class)->create([
+                    'following_id' => $userId,
+                    'follower_id' => $this->user->id,
+                ]);
+                $this->addReputation($userId, config('model.reputation.be_followed'));
+                app(Notification::class)->create([
+                    'user_send_id' => $this->user->id,
+                    'user_receive_id' => $userId,
+                    'target_id' => $userFollow->id,
+                    'type' => config('model.notification.follow'),
+                ]);
+            }
         }
     }
 
