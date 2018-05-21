@@ -55,6 +55,7 @@ class ReviewRepositoryEloquent extends AbstractRepositoryEloquent implements Rev
     {
         try {
             $review = Review::findOrFail($reviewId);
+            $this->deleteNotificationVote($this->user->id, $review->user_id);
             Event::fire('androidNotification', config('model.notification.up_vote'));
             $message = sprintf(translate('review.upvoted'), $this->user->name);
             event(new NotificationHandler($message, $review->user_id, config('model.notification.up_vote')));
@@ -83,6 +84,7 @@ class ReviewRepositoryEloquent extends AbstractRepositoryEloquent implements Rev
     {
         try {
             $review = Review::findOrFail($reviewId);
+            $this->deleteNotificationVote($this->user->id, $review->user_id);
             Event::fire('androidNotification', config('model.notification.down_vote'));
             $message = sprintf(translate('review.downvoted'), $this->user->name);
             event(new NotificationHandler($message, $review->user_id, config('model.notification.down_vote')));
@@ -126,5 +128,13 @@ class ReviewRepositoryEloquent extends AbstractRepositoryEloquent implements Rev
 
             throw new UnknownException($e->getMessage(), $e->getCode());
         }
+    }
+
+    public function deleteNotificationVote($userSend, $userReceive)
+    {
+        return app(Notification::class)->where('user_send_id', $userSend)
+            ->where('user_receive_id', $userReceive)
+            ->whereIn('type', [config('model.notification.up_vote'), config('model.notification.down_vote')])
+            ->delete();
     }
 }
