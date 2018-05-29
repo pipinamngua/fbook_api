@@ -133,4 +133,8 @@ return [
         'be_upvoted' => 1,
         'be_followed' => 1
     ],
+    'status_owner' => [
+        'added' => 1,
+        'not_added' => 0
+    ],
 ];

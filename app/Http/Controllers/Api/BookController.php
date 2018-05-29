@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Contracts\Repositories\BookRepository;
 use App\Contracts\Repositories\CategoryRepository;
 use App\Contracts\Repositories\OfficeRepository;
+use App\Contracts\Repositories\OwnerRepository;
 use App\Exceptions\Api\NotFoundException;
 use App\Http\Requests\Api\Book\ApproveRequest;
 use App\Http\Requests\Api\Book\BookFilteredByCategoryRequest;
@@ -191,7 +192,7 @@ class BookController extends ApiController
     {
         $data = $request->only(['key', 'type', 'page']);
 
-        return $this->getData(function() use ($data) {
+        return $this->getData(function () use ($data) {
             $data = $this->repository->searchBook($data);
 
             $this->compacts['items'] = $this->reFormatPaginate($data);
@@ -373,7 +374,10 @@ class BookController extends ApiController
     public function addOwner($id)
     {
         return $this->requestAction(function () use ($id) {
-            $this->repository->addOwner($id);
+            $book = $this->repository->addOwner($id);
+            $this->compacts['items'] = [
+                'book' => $book,
+            ];
         });
     }
 
@@ -443,14 +447,14 @@ class BookController extends ApiController
 
     public function getTotalBook()
     {
-        return $this->getData(function() {
+        return $this->getData(function () {
             $this->compacts['item'] = $this->repository->countRecord();
         });
     }
 
     public function getBookList()
     {
-        return $this->getData(function() {
+        return $this->getData(function () {
             $data = $this->repository->getByPage();
 
             $this->compacts['items'] = $this->reFormatPaginate($data);
@@ -459,7 +463,7 @@ class BookController extends ApiController
 
     public function countBook()
     {
-        return $this->getData(function() {
+        return $this->getData(function () {
             $this->compacts['item'] = $this->repository->countHaveBook();
         });
     }

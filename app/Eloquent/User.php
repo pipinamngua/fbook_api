@@ -23,6 +23,7 @@ class User extends Authenticatable
         'code',
         'avatar',
         'position',
+        'reputation_point',
         'role',
         'office_id',
         'tags',
@@ -36,7 +37,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 
+        'password',
         'remember_token',
     ];
 
@@ -63,12 +64,17 @@ class User extends Authenticatable
 
     public function reviews()
     {
-        return $this->belongsToMany(Book::class, 'reviews')->withPivot('title','content', 'star');
+        return $this->belongsToMany(Book::class, 'reviews')->withPivot('title', 'content', 'star');
     }
 
     public function owners()
     {
-        return $this->belongsToMany(Book::class, 'owners', 'user_id');
+        return $this->belongsToMany(Book::class, 'owners')->wherePivot('deleted_at', null);
+    }
+
+    public function checkAddedOwner()
+    {
+        return $this->belongsToMany(Book::class, 'owners');
     }
 
     public function usersFollowing()

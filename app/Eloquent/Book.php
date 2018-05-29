@@ -52,7 +52,12 @@ class Book extends Model
 
     public function owners()
     {
-        return $this->belongsToMany(User::class, 'owners')->withPivot('status');
+        return $this->belongsToMany(User::class, 'owners')->withPivot('status')->wherePivot('deleted_at', null);
+    }
+
+    public function checkAddedOwner()
+    {
+        return $this->belongsToMany(User::class, 'owners');
     }
 
     public function reviews()
