@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Eloquent\Book;
 use App\Eloquent\Media;
+use App\Eloquent\Owner;
 use App\Eloquent\User;
 use App\Eloquent\Office;
 use App\Eloquent\BookUser;
@@ -13,6 +14,7 @@ use App\Contracts\Repositories\BookRepository;
 use App\Contracts\Repositories\UserRepository;
 use App\Contracts\Repositories\MediaRepository;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Traits\Repositories\UploadableTrait;
@@ -44,7 +46,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         return new Book;
     }
-    
+
     public function updateBookModel()
     {
         return new UpdateBook;
@@ -134,7 +136,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     }
                 }
                 if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
-                    $query->where(function ($query) use($attribute) {
+                    $query->where(function ($query) use ($attribute) {
                         if (isset($attribute['search']['field']) && $attribute['search']['field']) {
                             $query->where($attribute['search']['field'], 'LIKE', '%' . $attribute['search']['keyword'] . '%');
                         } else {
@@ -279,11 +281,11 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     }
 
     protected function getBooksByBookUserStatus(
-        $status, 
-        $with = [], 
-        $dataSelect = ['*'], 
-        $limit = '', 
-        $attribute = [], 
+        $status,
+        $with = [],
+        $dataSelect = ['*'],
+        $limit = '',
+        $attribute = [],
         $officeId = ''
     )
     {
@@ -326,7 +328,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             config('model.book_user.status.returned'), $with, $dataSelect, $limit, $attribute, $officeId
         );
     }
-    
+
     protected function getDataInputCountView($attribute = [])
     {
         $sort = [
@@ -349,7 +351,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
         return compact('sort', 'filters');
     }
-    
+
     protected function getDataInputRating($attribute = [])
     {
         $sort = [
@@ -372,12 +374,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
         return compact('sort', 'filters');
     }
-    
+
     public function getBooksByFields($with = [], $dataSelect = ['*'], $field, $attribute = [], $officeId = '')
     {
         switch ($field) {
             case config('model.filter_books.view.key'):
-                return $this->getBooksByCountViewInDetail($with, $dataSelect,'', $attribute, $officeId);
+                return $this->getBooksByCountViewInDetail($with, $dataSelect, '', $attribute, $officeId);
 
             case config('model.filter_books.latest.key'):
                 return $this->getLatestBooksInDetail($with, $dataSelect, '', $attribute, $officeId);
@@ -609,30 +611,30 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         try {
             $book = $this->model()->findOrFail($id);
 
-            return  $book->load(['media','reviewsDetail',
-                'usersWaiting' => function($query) {
+            return $book->load(['media', 'reviewsDetail',
+                'usersWaiting' => function ($query) {
                     $query->select(array_merge($this->userSelect, ['owner_id']));
                     $query->orderBy('book_user.created_at', 'ASC');
                 },
-                'usersReading' => function($query) {
+                'usersReading' => function ($query) {
                     $query->select(array_merge($this->userSelect, ['owner_id']));
                     $query->orderBy('book_user.created_at', 'ASC');
                 },
-                'usersReturning' => function($query) {
+                'usersReturning' => function ($query) {
                     $query->select(array_merge($this->userSelect, ['owner_id']));
                     $query->orderBy('book_user.created_at', 'ASC');
                 },
-                'usersReturned' => function($query) {
+                'usersReturned' => function ($query) {
                     $query->select(array_merge($this->userSelect, ['owner_id']));
                     $query->orderBy('book_user.created_at', 'DESC');
                 },
-                'category' => function($query) {
+                'category' => function ($query) {
                     $query->select('id', 'name_vi', 'name_en', 'name_jp');
                 },
-                'office' => function($query) {
+                'office' => function ($query) {
                     $query->select('id', 'name');
                 },
-                'owners' => function($query) {
+                'owners' => function ($query) {
                     $query->select($this->userSelect);
                 }
             ]);
@@ -724,6 +726,8 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
+        $userRepository = new UserRepositoryEloquent();
+        $userRepository->addReputation($this->user->id, config('model.reputation.share_book'));
     }
 
     public function store(array $attributes, MediaRepository $mediaRepository)
@@ -797,18 +801,22 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         try {
             $book = $this->model()->findOrFail($id);
-            
-            $owneredCurrentBook = $book->owners()->where('user_id', $this->user->id)->count() !== 0;
-
-            if (!$owneredCurrentBook) {
-                $book->owners()->attach($this->user->id, [
+            $bookOwner = $book->checkAddedOwner()->where('user_id', $this->user->id)->first();
+            if ($bookOwner) {
+                $bookOwner->pivot->added = config('model.status_owner.added');
+                $bookOwner->pivot->updated_at = Carbon::now();
+                $bookOwner->pivot->deleted_at = NULL;
+                $bookOwner->pivot->save();
+            } else if (!$bookOwner) {
+                $book->checkAddedOwner()->attach($this->user->id, [
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
+                $userRepository = new UserRepositoryEloquent();
+                $userRepository->addReputation($this->user->id, config('model.reputation.share_book'));
             } else {
                 throw new ActionException('ownered_current_book');
             }
-
             Event::fire('notification', [
                 [
                     'current_user_id' => $this->user->id,
@@ -817,11 +825,13 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     'type' => config('model.notification.add_owner'),
                 ]
             ]);
+
+            return $bookOwner;
         } catch (ModelNotFoundException $e) {
             Log::error($e->getMessage());
 
             throw new NotFoundException();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
 
             throw new UnknownException($e->getMessage(), $e->getCode());
@@ -830,11 +840,16 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
     public function removeOwner(Book $book)
     {
+        // Delete requests of borrowing book
         $book->users()
             ->wherePivot('owner_id', $this->user->id)
-            ->wherePivot('status' , '<>', config('model.book_user.status.returned'))
+            ->wherePivot('status', '<>', config('model.book_user.status.returned'))
             ->detach();
-        $book->owners()->detach($this->user->id);
+
+        // Soft delete (can not use original soft delete for pivot)
+        $bookOwner = $book->checkAddedOwner()->where('user_id', $this->user->id)->first();
+        $bookOwner->pivot->deleted_at = Carbon::now();
+        $bookOwner->pivot->save();
 
         Event::fire('notification', [
             [
@@ -844,6 +859,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                 'type' => config('model.notification.remove_owner'),
             ]
         ]);
+        return $bookOwner;
     }
 
     public function uploadMedia(Book $book, $attributes = [], MediaRepository $mediaRepository)
@@ -905,8 +921,8 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                         ->wherePivot('owner_id', $this->user->id)
                         ->wherePivot('status', config('model.book_user.status.returning'))
                         ->updateExistingPivot($userId, [
-                        'status' => config('model.book_user.status.returned'),
-                    ]);
+                            'status' => config('model.book_user.status.returned'),
+                        ]);
                     Event::fire('androidNotification', config('model.notification.approve_returning'));
                     $message = sprintf(translate('notification.approve_returning_book'), $this->user->name, $book->title);
                     event(new NotificationHandler($message, $userId, config('model.notification.approve_returning')));
@@ -1145,7 +1161,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
     public function searchBook($data, $dataSelect = ['*'], $withRelation = [])
     {
-        Paginator::currentPageResolver(function() use ($data) {
+        Paginator::currentPageResolver(function () use ($data) {
             return $data['page'];
         });
         if ($data['type'] == config('model.filter_book.by_title')) {

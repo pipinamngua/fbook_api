@@ -10,6 +10,7 @@ use App\Eloquent\Category;
 use App\Eloquent\UserFollow;
 use App\Eloquent\Notification;
 use App\Contracts\Repositories\UserRepository;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Pagination\Paginator;
 use Carbon\Carbon;
@@ -17,6 +18,7 @@ use App\Exceptions\Api\ActionException;
 use App\Exceptions\Api\NotFoundException;
 use App\Exceptions\Api\UnknownException;
 use Log;
+use Mockery\Exception;
 
 class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserRepository
 {
@@ -29,6 +31,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
         'position',
         'role',
         'office_id',
+        'reputation_point',
         'avatar',
         'tags',
         'employee_code',
@@ -50,7 +53,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
 
         if (isset($workspaceInfo['id'])) {
             $wsmWorkspace = app(Office::class)->where('wsm_workspace_id', $workspaceInfo['id'])->first();
-            if($wsmWorkspace) {
+            if ($wsmWorkspace) {
                 $wsmWorkspace->update([
                     'name' => $workspaceInfo['name'],
                     'area' => $workspaceInfo['name'],
@@ -66,7 +69,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
         $userOfficeId = $wsmWorkspace['id'] ?: NULL;
 
         if ($userInDatabase) {
-            if(in_array($userFromAuthServer['email'], config('settings.email_admin'))) {
+            if (in_array($userFromAuthServer['email'], config('settings.email_admin'))) {
                 $currentUser->update([
                     'name' => $userFromAuthServer['name'],
                     'email' => $userFromAuthServer['email'],
@@ -86,7 +89,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
                 ]);
             }
         } else {
-            if(in_array($userFromAuthServer['email'], config('settings.email_admin'))) {
+            if (in_array($userFromAuthServer['email'], config('settings.email_admin'))) {
                 $currentUser = $this->model()->create([
                     'name' => $userFromAuthServer['name'],
                     'email' => $userFromAuthServer['email'],
@@ -129,17 +132,17 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
                 return $this->model()->findOrFail($id)->owners()
                     ->getBookByOffice($officeId)
                     ->with(array_merge($with, [
-                            'usersReading' => function($query) {
+                            'usersReading' => function ($query) {
                                 $query->select(array_merge($this->userSelect, ['owner_id']))
                                     ->where('book_user.owner_id', $this->user->id);
                                 $query->orderBy('book_user.created_at', 'ASC')->limit(1);
                             },
-                            'usersWaiting' => function($query) {
+                            'usersWaiting' => function ($query) {
                                 $query->select('id', 'name', 'avatar', 'position', 'email')
                                     ->where('book_user.owner_id', $this->user->id);
                                 $query->orderBy('book_user.created_at', 'ASC');
                             },
-                            'usersReturning' => function($query) {
+                            'usersReturning' => function ($query) {
                                 $query->select('id', 'name', 'avatar', 'position', 'email')
                                     ->where('book_user.owner_id', $this->user->id);
                                 $query->orderBy('book_user.created_at', 'ASC')->limit(1);
@@ -209,10 +212,11 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
     {
         $books = app(Book::class)
             ->select($dataSelect)
-            ->with(array_merge($with, ['userReadingBook' => function($query) {
+            ->with(array_merge($with, ['userReadingBook' => function ($query) {
                 $query->select('id', 'name', 'avatar', 'position');
             }]))
             ->where('owner_id', $this->user->id)
+            ->where('deleted_at', '2018-05-17 10:31:31')
             ->paginate(config('paginate.default'));
 
         foreach ($books->items() as $book) {
@@ -228,12 +232,12 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
         $books = $this->user->owners()
             ->select($dataSelect)
             ->with(array_merge($with, [
-                'usersWaiting' => function($query) {
+                'usersWaiting' => function ($query) {
                     $query->select('id', 'name', 'avatar', 'position')
                         ->where('book_user.owner_id', $this->user->id);
                     $query->orderBy('book_user.created_at', 'ASC');
                 },
-                'usersReturning' => function($query) {
+                'usersReturning' => function ($query) {
                     $query->select('id', 'name', 'avatar', 'position')
                         ->where('book_user.owner_id', $this->user->id);
                     $query->orderBy('book_user.created_at', 'ASC')->limit(1);
@@ -251,22 +255,22 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
         return $this->user->owners()->where('book_id', $bookId)
             ->select($dataSelect)
             ->with(array_merge($with, [
-                'usersWaiting' => function($query) {
+                'usersWaiting' => function ($query) {
                     $query->select('id', 'name', 'avatar', 'position', 'email')
                         ->where('book_user.owner_id', $this->user->id);
                     $query->orderBy('book_user.created_at', 'ASC');
                 },
-                'usersReturning' => function($query) {
+                'usersReturning' => function ($query) {
                     $query->select('id', 'name', 'avatar', 'position', 'email')
                         ->where('book_user.owner_id', $this->user->id);
                     $query->orderBy('book_user.created_at', 'ASC')->limit(1);
                 },
-                'usersReading' => function($query) {
+                'usersReading' => function ($query) {
                     $query->select('id', 'name', 'avatar', 'position', 'email')
                         ->where('book_user.owner_id', $this->user->id);
                     $query->orderBy('book_user.created_at', 'ASC')->limit(1);
                 },
-                'usersReturned' => function($query) {
+                'usersReturned' => function ($query) {
                     $query->select('id', 'name', 'avatar', 'position', 'email')
                         ->where('book_user.owner_id', $this->user->id);
                     $query->orderBy('book_user.created_at', 'ASC');
@@ -279,10 +283,10 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
         $notification = app(Notification::class)
             ->with([
                 'book',
-                'userSend' => function($query) {
+                'userSend' => function ($query) {
                     $query->select($this->userSelect);
                 },
-                'userReceive' => function($query) {
+                'userReceive' => function ($query) {
                     $query->select($this->userSelect);
                 },
                 'follow'
@@ -294,18 +298,18 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
         $notificationFollow = app(Notification::class)
             ->with([
                 'book',
-                'userSend' => function($query) {
+                'userSend' => function ($query) {
                     $query->select($this->userSelect);
                 },
-                'userReceive' => function($query) {
+                'userReceive' => function ($query) {
                     $query->select($this->userSelect);
                 }
             ])
-            ->orWhereIn('user_send_id', function($query){
+            ->orWhereIn('user_send_id', function ($query) {
                 $query->select('following_id')
-                ->from('user_follow')
-                ->where('follower_id', $this->user->id)
-                ->get();
+                    ->from('user_follow')
+                    ->where('follower_id', $this->user->id)
+                    ->get();
             })
             ->orderBy('created_at', 'DESC')
             ->paginate(config('paginate.default'));
@@ -318,10 +322,10 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
         $data = app(Notification::class)
             ->with([
                 'book',
-                'userSend' => function($query) {
+                'userSend' => function ($query) {
                     $query->select($this->userSelect);
                 },
-                'userReceive' => function($query) {
+                'userReceive' => function ($query) {
                     $query->select($this->userSelect);
                 },
                 'follow'
@@ -445,7 +449,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
                 'office',
                 'updateMedia',
                 'userRequest',
-                'currentBookInfo' => function($query) {
+                'currentBookInfo' => function ($query) {
                     $query->with(['category', 'office', 'media']);
                 }
             ])
@@ -470,7 +474,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
 
     public function search($data, $dataSelect = ['*'], $withRelation = [])
     {
-        Paginator::currentPageResolver(function() use ($data) {
+        Paginator::currentPageResolver(function () use ($data) {
             return $data['page'];
         });
 
