@@ -26,4 +26,9 @@ class Vote extends Model
     {
         return $this->belongsTo(Review::class, 'review_id');
     }
+    
+    public function logReputation()
+    {
+        return $this->morphOne(LogReputation::class, 'log_id');
+    }
 }

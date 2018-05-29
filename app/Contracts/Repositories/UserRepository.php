@@ -2,6 +2,8 @@
 
 namespace App\Contracts\Repositories;
 
+use App\Contracts\Repositories\LogReputationRepository;
+
 interface UserRepository extends AbstractRepository
 {
     public function getCurrentUser($userFromAuthServer);
@@ -24,7 +26,7 @@ interface UserRepository extends AbstractRepository
 
     public function getNotificationsDropdown();
 
-    public function followOrUnfollow($userId);
+    public function followOrUnfollow($userId, LogReputationRepository $logReputationRepository);
 
     public function getFollowInfo($id);
 
@@ -38,5 +40,11 @@ interface UserRepository extends AbstractRepository
 
     public function getWaitingApproveEditBook();
 
-    public function addReputation($userId, $point);
+    public function addReputation(
+        $userId,
+        $point,
+        $logId,
+        $logType,
+        LogReputationRepository $logReputationRepository
+    );
 }

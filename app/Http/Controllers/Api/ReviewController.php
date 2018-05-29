@@ -8,6 +8,7 @@ use App\Contracts\Repositories\VoteRepository;
 use App\Contracts\Repositories\BookRepository;
 use App\Contracts\Repositories\MediaRepository;
 use App\Contracts\Repositories\UserRepository;
+use App\Contracts\Repositories\LogReputationRepository;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\Book\CommentRequest;
 use App\Http\Requests\Api\Book\EditCommentRequest;
@@ -68,13 +69,22 @@ class ReviewController extends ApiController
         }, __FUNCTION__);
     }
 
-    public function vote(Request $request, VoteRepository $voteRepository, UserRepository $userRepository)
-    {
-        return $this->doAction(function () use ($request, $voteRepository, $userRepository) {
+    public function vote(
+        Request $request,
+        VoteRepository $voteRepository,
+        UserRepository $userRepository,
+        LogReputationRepository $logReputationRepository
+    ) {
+        return $this->doAction(function () use (
+            $request,
+            $voteRepository,
+            $userRepository,
+            $logReputationRepository
+        ) {
 
             $check = $voteRepository->checkVoted($request->userId, $request->reviewId);
-
             if ($check) {
+                $this->compacts['check'] = $check;
                 if ($check->status == $request->status) {
                     $this->compacts['items'] = [
                         'messages' => config('model.review_messeges.can_not_vote')
@@ -84,7 +94,7 @@ class ReviewController extends ApiController
                     if ($request->status == config('model.request_vote.up_vote')) {
                         $checkUpVoted = $voteRepository->checkUpVoted($request->userId, $request->reviewId);
                         if (!$checkUpVoted) {
-                            $userRepository->addReputation($request->reviewerId, config('model.reputation.be_upvoted'));
+                            $userRepository->addReputation($request->reviewerId, config('model.reputation.be_upvoted'), $check->id, config('model.log_type.be_upvoted'), $logReputationRepository);
                         }
                         $this->repository->increaseVote($request->reviewId, self::RE_VOTE_NUMBER);
                     } else {
@@ -94,6 +104,8 @@ class ReviewController extends ApiController
                 }
             } else {
                 $voteCheck = $voteRepository->addNewVote($request->userId, $request->reviewId, $request->status);
+                $check = $voteRepository->checkVoted($request->userId, $request->reviewId);
+
                 if (!$voteCheck) {
                     return $this->compacts['items'] = [
                         'messages' => config('model.review_messeges.owner_can_not_vote')
@@ -101,7 +113,7 @@ class ReviewController extends ApiController
                 }
                 if ($request->status == config('model.request_vote.up_vote')) {
                     $this->repository->increaseVote($request->reviewId);
-                    $userRepository->addReputation($request->reviewerId, config('model.reputation.be_upvoted'));
+                    $userRepository->addReputation($request->reviewerId, config('model.reputation.be_upvoted'), $check->id, config('model.log_type.be_upvoted'), $logReputationRepository);
                 } else {
                     $this->repository->decreaseVote($request->reviewId);
                 }

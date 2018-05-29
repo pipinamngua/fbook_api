@@ -119,4 +119,9 @@ class User extends Authenticatable
             return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->format('d/m/Y');
         }
     }
+
+    public function logReputation()
+    {
+        return $this->hasMany(LogReputation::class);
+    }
 }

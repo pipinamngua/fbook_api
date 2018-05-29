@@ -22,4 +22,9 @@ class BookUser extends AbstractEloquent
     {
         return $this->belongsTo(Book::class);
     }
+    
+    public function logReputation()
+    {
+        return $this->morphOne(LogReputation::class, 'log_id');
+    }
 }

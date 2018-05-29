@@ -141,4 +141,11 @@ return [
         'added' => 1,
         'not_added' => 0
     ],
+    'log_type' => [
+        'share_book' => 1,
+        'add_owner' => 2,
+        'approve_borrow' => 3,
+        'be_upvoted' => 4,
+        'be_followed' => 5
+    ],
 ];
