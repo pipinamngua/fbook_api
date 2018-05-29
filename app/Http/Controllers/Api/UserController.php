@@ -7,6 +7,7 @@ use App\Exceptions\Api\ActionException;
 use App\Http\Requests\Api\User\AddTagsRequest;
 use App\Http\Requests\Api\User\SearchUserRequest;
 use App\Http\Requests\Api\Follow\FollowRequest;
+use Auth;
 
 class UserController extends ApiController
 {

@@ -25,6 +25,10 @@ return [
             'reading' => 2,
             'returning' => 3,
             'returned' => 4,
+        ],
+        'approved' => [
+            'approved_before' => 1,
+            'never_approve' => 0,
         ]
     ],
     'book_user_status_cancel' => 5,
