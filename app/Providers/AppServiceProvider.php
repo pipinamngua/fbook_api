@@ -9,7 +9,7 @@ use League\Glide\ServerFactory;
 use League\Glide\Responses\LaravelResponseFactory;
 use Illuminate\Support\Facades\Storage;
 use League\Glide\Urls\UrlBuilderFactory;
-
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Relation::morphMap([
+            config('model.log_type.be_upvoted') => \App\Eloquent\Vote::class,
+        ]);
+
     }
 
     /**

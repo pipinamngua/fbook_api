@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -61,7 +62,9 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Relation::morphMap([
+            config('model.log_type.be_upvoted') => Vote::class,
+        ]);
     }
 
     /**

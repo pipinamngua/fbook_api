@@ -81,7 +81,6 @@ class ReviewController extends ApiController
             $userRepository,
             $logReputationRepository
         ) {
-
             $check = $voteRepository->checkVoted($request->userId, $request->reviewId);
             if ($check) {
                 $this->compacts['check'] = $check;

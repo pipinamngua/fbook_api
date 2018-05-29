@@ -12,15 +12,15 @@ class Review extends Model
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'title',
         'content',
-        'star' .
+        'star',
         'up_vote',
         'down_vote'
     ];
 
     protected $hidden = [
-        'user_id', 
         'book_id', 
         'owner_id', 
         'updated_at'
