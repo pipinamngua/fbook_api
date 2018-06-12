@@ -9,8 +9,10 @@ use App\Eloquent\Office;
 use App\Eloquent\Category;
 use App\Eloquent\UserFollow;
 use App\Eloquent\Notification;
+use App\Eloquent\LogReputation;
 use App\Contracts\Repositories\UserRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Contracts\Repositories\LogReputationRepository;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Pagination\Paginator;
 use Carbon\Carbon;
@@ -337,7 +339,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
         return compact('data');
     }
 
-    public function followOrUnfollow($userId)
+    public function followOrUnfollow($userId, LogReputationRepository $logReputationRepository)
     {
         if ($this->user->id === $userId) {
             throw new ActionException('can_not_follow_yourself');
@@ -370,7 +372,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
                     'following_id' => $userId,
                     'follower_id' => $this->user->id,
                 ]);
-                $this->addReputation($userId, config('model.reputation.be_followed'));
+                $this->addReputation($userId, config('model.reputation.be_followed'), $userFollow->id, config('model.log_type.be_followed'), $logReputationRepository);
                 app(Notification::class)->create([
                     'user_send_id' => $this->user->id,
                     'user_receive_id' => $userId,
@@ -504,9 +506,10 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
             ->first();
     }
 
-    public function addReputation($userId, $point) {
+    public function addReputation($userId, $point, $logId, $logType, LogReputationRepository $logReputationRepository) {
         $user = $this->model()->findOrFail($userId);
         $user->reputation_point = $user->reputation_point + $point;
         $user->save();
+        $logReputationRepository->addLog($logId, $logType, $point);
     }
 }

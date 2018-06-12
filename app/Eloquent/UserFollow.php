@@ -30,4 +30,9 @@ class UserFollow extends Model
     {
         return $this->belongsTo(User::class, 'following_id');
     }
+
+    public function logReputation()
+    {
+        return $this->morphOne(LogReputation::class, 'log_id');
+    }
 }

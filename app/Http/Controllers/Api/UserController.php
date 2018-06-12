@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\Repositories\LogReputationRepository;
 use App\Contracts\Repositories\UserRepository;
 use App\Exceptions\Api\ActionException;
 use App\Http\Requests\Api\User\AddTagsRequest;
 use App\Http\Requests\Api\User\SearchUserRequest;
 use App\Http\Requests\Api\Follow\FollowRequest;
-use Auth;
 
 class UserController extends ApiController
 {
@@ -178,12 +178,12 @@ class UserController extends ApiController
         });
     }
 
-    public function followOrUnfollow(FollowRequest $request)
+    public function followOrUnfollow(FollowRequest $request, LogReputationRepository $logReputationRepository)
     {
         $data = $request->all();
 
-        return $this->requestAction(function () use ($data) {
-            $this->repository->followOrUnfollow($data['item']['user_id']);
+        return $this->requestAction(function () use ($data, $logReputationRepository) {
+            $this->repository->followOrUnfollow($data['item']['user_id'], $logReputationRepository);
         });
     }
 

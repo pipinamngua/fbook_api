@@ -43,6 +43,10 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Contracts\Repositories\OwnerRepository::class,
             \App\Repositories\OwnerRepositoryEloquent::class,
         ],
+        'log' => [
+            \App\Contracts\Repositories\LogReputationRepository::class,
+            \App\Repositories\LogReputationRepositoryEloquent::class,
+        ],
 
     ];
 

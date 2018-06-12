@@ -6,6 +6,7 @@ use App\Contracts\Repositories\BookRepository;
 use App\Contracts\Repositories\CategoryRepository;
 use App\Contracts\Repositories\OfficeRepository;
 use App\Contracts\Repositories\OwnerRepository;
+use App\Contracts\Repositories\LogReputationRepository;
 use App\Exceptions\Api\NotFoundException;
 use App\Http\Requests\Api\Book\ApproveRequest;
 use App\Http\Requests\Api\Book\BookFilteredByCategoryRequest;
@@ -114,12 +115,15 @@ class BookController extends ApiController
         return $this->jsonRender();
     }
 
-    public function store(StoreRequest $request, MediaRepository $mediaRepository)
-    {
+    public function store(
+        StoreRequest $request,
+        MediaRepository $mediaRepository,
+        LogReputationRepository $logReputationRepository
+    ) {
         $data = $request->all();
 
-        return $this->doAction(function () use ($data, $mediaRepository) {
-            $this->compacts['item'] = $this->repository->store($data, $mediaRepository);
+        return $this->doAction(function () use ($data, $mediaRepository, $logReputationRepository) {
+            $this->compacts['item'] = $this->repository->store($data, $mediaRepository, $logReputationRepository);
         }, __FUNCTION__);
     }
 
@@ -210,21 +214,31 @@ class BookController extends ApiController
         }, __FUNCTION__);
     }
 
-    public function approve($bookId, ApproveRequest $request, UserRepository $userRepository)
-    {
+    public function approve(
+        $bookId,
+        ApproveRequest $request,
+        UserRepository $userRepository,
+        LogReputationRepository $logReputationRepository
+    ) {
         $data = $request->all();
         $key = $data['item']['key'];
 
-        return $this->doAction(function () use ($data, $bookId, $key, $userRepository) {
+        return $this->doAction(function () use ($data, $bookId, $key, $userRepository, $logReputationRepository) {
             $book = $this->repository->findOrfail($bookId);
             $this->before('update', $book);
-            $check = $this->repository->checkApprove($book, $data['item'])->approved;
+            $check = $this->repository->checkApprove($book, $data['item']);
 
             $this->repository->approve($book, $data['item']);
+            $this->compacts['log_id'] = $check;
 
             if ($key === config('settings.book_key.approve')) {
-                if ($check === config('model.book_user.approved.never_approve')) {
-                    $userRepository->addReputation($this->user->id, config('model.reputation.approve_borrow'));
+                if ($check->approved === config('model.book_user.approved.never_approve')) {
+                    $logData['user_id'] = $data['item']['user_id'];
+                    $logData['book_id'] = $book->id;
+                    $logData['owners_id'] = $this->user->id;
+                    $logData = json_encode($logData);
+
+                    $userRepository->addReputation($this->user->id, config('model.reputation.approve_borrow'), $logData, config('model.log_type.approve_borrow'), $logReputationRepository);
                     $this->compacts['point'] = config('model.reputation.approve_borrow');
                 }
             }
@@ -380,10 +394,10 @@ class BookController extends ApiController
         });
     }
 
-    public function addOwner($id)
+    public function addOwner($id, LogReputationRepository $logReputationRepository)
     {
-        return $this->requestAction(function () use ($id) {
-            $book = $this->repository->addOwner($id);
+        return $this->requestAction(function () use ($id, $logReputationRepository) {
+            $book = $this->repository->addOwner($id, $logReputationRepository);
             $this->compacts['items'] = [
                 'book' => $book,
             ];

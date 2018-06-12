@@ -4,6 +4,7 @@ namespace App\Contracts\Repositories;
 
 use App\Eloquent\Book;
 use App\Contracts\Repositories\MediaRepository;
+use App\Contracts\Repositories\LogReputationRepository;
 
 interface BookRepository extends AbstractRepository
 {
@@ -27,7 +28,11 @@ interface BookRepository extends AbstractRepository
 
     public function show($id);
 
-    public function store(array $attributes, MediaRepository $mediaRepository);
+    public function store(
+        array $attributes,
+        MediaRepository $mediaRepository,
+        LogReputationRepository $logReputationRepository
+    );
 
     public function destroy(Book $book);
 
@@ -37,7 +42,7 @@ interface BookRepository extends AbstractRepository
 
     public function increaseView(Book $book);
 
-    public function addOwner($id);
+    public function addOwner($id, LogReputationRepository $logReputationRepository);
 
     public function removeOwner(Book $book);
 

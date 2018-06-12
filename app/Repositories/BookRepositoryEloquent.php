@@ -13,6 +13,7 @@ use App\Eloquent\Notification;
 use App\Contracts\Repositories\BookRepository;
 use App\Contracts\Repositories\UserRepository;
 use App\Contracts\Repositories\MediaRepository;
+use App\Contracts\Repositories\LogReputationRepository;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -719,7 +720,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         return $this->model()->whereCode($code)->first();
     }
 
-    private function addOwnerBook(Book $book)
+    private function addOwnerBook(Book $book, LogReputationRepository $logReputationRepository)
     {
         $book->owners()->detach($this->user->id);
         $book->owners()->attach($this->user->id, [
@@ -727,10 +728,14 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             'updated_at' => Carbon::now(),
         ]);
         $userRepository = new UserRepositoryEloquent();
-        $userRepository->addReputation($this->user->id, config('model.reputation.share_book'));
+        $logData['user_id'] = $this->user->id;
+        $logData['book_id'] = $book->id;
+
+        $logData = json_encode($logData);
+        $userRepository->addReputation($this->user->id, config('model.reputation.share_book'), $logData, config('model.log_type.share_book'), $logReputationRepository);
     }
 
-    public function store(array $attributes, MediaRepository $mediaRepository)
+    public function store(array $attributes, MediaRepository $mediaRepository, LogReputationRepository $logReputationRepository)
     {
         if (!isset($attributes['medias'])) {
             $dataCompareBook = array_only($attributes, [
@@ -744,7 +749,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             $bookExistedInDatabase = $this->model()->where($dataCompareBook)->first();
 
             if (count($bookExistedInDatabase)) {
-                $this->addOwnerBook($bookExistedInDatabase);
+                $this->addOwnerBook($bookExistedInDatabase, $logReputationRepository);
 
                 return $bookExistedInDatabase->load('category', 'office', 'media');
             }
@@ -754,7 +759,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $dataBook['code'] = sha1(time());
         $book = $this->model()->create($dataBook);
 
-        $this->addOwnerBook($book);
+        $this->addOwnerBook($book, $logReputationRepository);
 
         if (isset($attributes['medias'])) {
             $this->uploadAndSaveMediasForBook($attributes['medias'], $book, $mediaRepository);
@@ -797,7 +802,7 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             ->paginate(config('paginate.default'));
     }
 
-    public function addOwner($id)
+    public function addOwner($id, LogReputationRepository $logReputationRepository)
     {
         try {
             $book = $this->model()->findOrFail($id);
@@ -812,8 +817,14 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
+                $logData['user_id'] = $this->user->id;
+                $logData['book_id'] = $book->id;
+
+                $logData = json_encode($logData);
+
                 $userRepository = new UserRepositoryEloquent();
-                $userRepository->addReputation($this->user->id, config('model.reputation.share_book'));
+
+                $userRepository->addReputation($this->user->id, config('model.reputation.add_owner'), $logData, config('model.log_type.share_book'), $logReputationRepository);
             } else {
                 throw new ActionException('ownered_current_book');
             }
