@@ -8,6 +8,9 @@ use App\Exceptions\Api\ActionException;
 use App\Http\Requests\Api\User\AddTagsRequest;
 use App\Http\Requests\Api\User\SearchUserRequest;
 use App\Http\Requests\Api\Follow\FollowRequest;
+use App\Exceptions\Api\NotFoundException;
+use App\Exceptions\Api\UnknownException;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends ApiController
 {
@@ -90,7 +93,7 @@ class UserController extends ApiController
 
     public function show($id)
     {
-        return $this->requestAction(function() use ($id) {
+        return $this->requestAction(function () use ($id) {
             $this->compacts['item'] = $this->repository->show($id);
             $this->compacts['item']['favorite_categories'] = $this->repository->getFavoriteCategory($id);
         });
@@ -98,15 +101,14 @@ class UserController extends ApiController
 
     public function getBook($id, $action)
     {
-        if (
-            !in_array($action, array_keys(config('model.book_user.status')))
+        if (!in_array($action, array_keys(config('model.book_user.status')))
             && $action != config('model.user_sharing_book')
             && $action != config('model.user_reviewed_book')
         ) {
             throw new ActionException;
         }
 
-        return $this->getData(function() use ($id, $action) {
+        return $this->getData(function () use ($id, $action) {
             $data = $this->repository->getDataBookOfUser($id, $action, $this->bookSelect, $this->relations);
 
             $this->compacts['items'] = $this->reFormatPaginate($data);
@@ -115,7 +117,7 @@ class UserController extends ApiController
 
     public function getUserFromToken()
     {
-        return $this->requestAction(function() {
+        return $this->requestAction(function () {
             $this->compacts['item'] = $this->user;
             $this->compacts['item']['favorite_categories'] = $this->repository->getFavoriteCategory($this->user->id);
         });
@@ -125,14 +127,14 @@ class UserController extends ApiController
     {
         $data = $request->item;
 
-        return $this->requestAction(function() use ($data) {
+        return $this->requestAction(function () use ($data) {
             $this->repository->addTags($data['tags']);
         });
     }
 
     public function getInterestedBooks()
     {
-        return $this->requestAction(function() {
+        return $this->requestAction(function () {
             $this->compacts['items'] = $this->reFormatPaginate(
                 $this->repository->getInterestedBooks($this->bookSelect, $this->relations)
             );
@@ -141,7 +143,7 @@ class UserController extends ApiController
 
     public function ownedBooks()
     {
-        return $this->requestAction(function() {
+        return $this->requestAction(function () {
             $this->compacts['items'] = $this->reFormatPaginate(
                 $this->repository->ownedBooks($this->bookSelect, ['image'])
             );
@@ -150,7 +152,7 @@ class UserController extends ApiController
 
     public function getListWaitingApprove()
     {
-        return $this->getData(function() {
+        return $this->getData(function () {
             $data = $this->repository->getListWaitingApprove($this->bookSelect, $this->relations);
 
             $this->compacts['items'] = $this->reFormatPaginate($data);
@@ -159,21 +161,21 @@ class UserController extends ApiController
 
     public function getBookApproveDetail($bookId)
     {
-        return $this->getData(function() use ($bookId) {
+        return $this->getData(function () use ($bookId) {
             $this->compacts['item'] = $this->repository->getBookApproveDetail($bookId, $this->bookSelect, $this->relations);
         });
     }
 
     public function getNotifications()
     {
-        return $this->requestAction(function() {
+        return $this->requestAction(function () {
             $this->compacts['items'] = $this->repository->getNotifications();
         });
     }
 
     public function getNotificationsDropdown()
     {
-        return $this->requestAction(function() {
+        return $this->requestAction(function () {
             $this->compacts['items']['notification'] = $this->repository->getNotificationsDropdown();
         });
     }
@@ -189,49 +191,49 @@ class UserController extends ApiController
 
     public function getFollowInfo($id)
     {
-        return $this->requestAction(function() use ($id) {
+        return $this->requestAction(function () use ($id) {
             $this->compacts['items'] = $this->repository->getFollowInfo($id);
         });
     }
 
     public function updateViewNotifications($notificationId)
     {
-        return $this->requestAction(function() use ($notificationId) {
+        return $this->requestAction(function () use ($notificationId) {
             $this->repository->updateViewNotifications($notificationId);
         });
     }
 
     public function getCountNotifications()
     {
-        return $this->requestAction(function() {
+        return $this->requestAction(function () {
             $this->compacts['item'] = $this->repository->countNotificationNotView();
         });
     }
 
     public function updateViewNotificationsAll()
     {
-        return $this->requestAction(function() {
+        return $this->requestAction(function () {
             $this->repository->updateViewNotificationsAll();
         });
     }
 
     public function getWaitingApproveEditBook()
     {
-        return $this->requestAction(function() {
+        return $this->requestAction(function () {
             $this->compacts['item'] = $this->repository->getWaitingApproveEditBook($this->updateBookSelect);
         });
     }
 
     public function getTotalUser()
     {
-        return $this->getData(function() {
+        return $this->getData(function () {
             $this->compacts['item'] = $this->repository->countRecord();
         });
     }
 
     public function getUserList()
     {
-        return $this->getData(function() {
+        return $this->getData(function () {
             $data = $this->repository->getByPage();
 
             $this->compacts['items'] = $this->reFormatPaginate($data);
@@ -242,7 +244,7 @@ class UserController extends ApiController
     {
         $data = $request->only(['key', 'type', 'page']);
 
-        return $this->getData(function() use ($data) {
+        return $this->getData(function () use ($data) {
             $data = $this->repository->search($data);
 
             $this->compacts['items'] = $this->reFormatPaginate($data);
@@ -254,5 +256,24 @@ class UserController extends ApiController
         $this->compacts['item'] = $this->repository->getDetail($userId);
 
         return $this->jsonRender();
+    }
+
+    public function setRoleUser($id, $role)
+    {
+        try {
+            return $this->doAction(function () use ($id, $role) {
+                $user = $this->repository->findOrFail($id);
+
+                $this->repository->setRole($user, $role);
+            }, __FUNCTION__);
+        } catch (ModelNotFoundException $e) {
+            Log::error($e->getMessage());
+
+            throw new NotFoundException();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new UnknownException($e->getMessage(), $e->getCode());
+        }
     }
 }

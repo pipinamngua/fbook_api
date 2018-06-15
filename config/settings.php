@@ -2,12 +2,12 @@
 
 return [
     'action_exception_method' => [
-        'store', 
-        'storeMultiple', 
-        'update', 
-        'destroy', 
-        'updateMultiple', 
-        'restore', 
+        'store',
+        'storeMultiple',
+        'update',
+        'destroy',
+        'updateMultiple',
+        'restore',
         'delete'
     ],
     'round_average_star' => 2,
@@ -62,24 +62,8 @@ return [
         'remove_waiting' => 'remove_waiting',
     ],
     'email_admin' => [
-        'chu.anh.tuan@framgia.com',
-        'hoang.nhac.trung@framgia.com',
-        'huynh.quang.diep@framgia.com',
-        'trinh.duc.toan@framgia.com',
-        'mai.tuan.viet@framgia.com',
-        'nguyen.van.tran.anhb@framgia.com',
-        'nguyen.binh.dieu@framgia.com',
-        'le.quang.dao@framgia.com',
-        'ho.thi.thien.trang@framgia.com',
-        'nguyen.thi.duy.phuong@framgia.com',
-        'doan.thuy.phuong@framgia.com',
-        'pham.thu.hang@framgia.com',
-        'nguyen.huu.su@framgia.com',
-        'phan.van.khoi@framgia.com',
-        'vuong.minh.thai@framgia.com',
-        'bui.thi.hieu@framgia.com',
-        'hoang.viet.an@framgia.com'
     ],
     'admin' => 'admin',
     'user' => 'user',
+    'librarian' => 'librarian',
 ];
