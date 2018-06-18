@@ -38,7 +38,7 @@ class Admin
         $currentUser = $this->userRepository->getCurrentUser($userFromAuthServer);
         Auth::guard('fauth')->setUser($currentUser);
 
-        if ($currentUser->role != config('settings.admin')) {
+        if ($currentUser->role != config('settings.admin') &&  $currentUser->role != config('settings.librarian')) {
             throw new UnknownException(translate('exception.not_admin'), 401);
         }
 

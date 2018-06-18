@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Http\Request;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -60,7 +61,7 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
              'uses' => 'ReviewController@editCommentReview']);
         Route::post('books/vote', ['as' => 'books.review.vote', 'uses' => 'ReviewController@vote']);
         Route::delete('books/review-details/remove-comment/{id}', [
-            'as' => 'books.review.remove.comment', 
+            'as' => 'books.review.remove.comment',
             'uses' => 'ReviewController@removeComment',
         ]);
         Route::resource('books', 'BookController', [
@@ -104,5 +105,6 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::get('books', 'BookController@getBookList');
         Route::post('books/search', 'BookController@searchAdmin');
         Route::delete('books/delete/{id}', ['as' => 'books.delete', 'uses' => 'BookController@destroyBook']);
+        Route::post('set-role-user/{id}/{role}', 'UserController@setRoleUser');
     });
 });

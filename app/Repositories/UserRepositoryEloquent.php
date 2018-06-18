@@ -21,6 +21,7 @@ use App\Exceptions\Api\NotFoundException;
 use App\Exceptions\Api\UnknownException;
 use Log;
 use Mockery\Exception;
+use App\Events\NotificationHandler;
 
 class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserRepository
 {
@@ -50,7 +51,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
         $userInDatabase = $this->model()
             ->whereEmail($userFromAuthServer['email'])
             ->first();
-        $workspaceInfo = $userFromAuthServer['workspaces'][0] ?: NULL;
+        $workspaceInfo = $userFromAuthServer['workspaces'][0] ?: null;
         $currentUser = $userInDatabase;
 
         if (isset($workspaceInfo['id'])) {
@@ -68,7 +69,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
                 ])->fresh();
             }
         }
-        $userOfficeId = $wsmWorkspace['id'] ?: NULL;
+        $userOfficeId = $wsmWorkspace['id'] ?: null;
 
         if ($userInDatabase) {
             if (in_array($userFromAuthServer['email'], config('settings.email_admin'))) {
@@ -87,7 +88,6 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
                     'avatar' => $userFromAuthServer['avatar'],
                     'office_id' => $userOfficeId,
                     'employee_code' => $userFromAuthServer['employee_code'],
-                    'role' => config('settings.user'),
                 ]);
             }
         } else {
@@ -118,8 +118,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
     public function getDataBookOfUser($id, $action, $select = ['*'], $with = [], $officeId = '')
     {
         try {
-            if (
-                in_array($action, array_keys(config('model.book_user.status')))
+            if (in_array($action, array_keys(config('model.book_user.status')))
                 && in_array(config('model.book_user.status.' . $action), array_values(config('model.book_user.status')))
             ) {
                 return $this->model()->findOrFail($id)
@@ -149,8 +148,7 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
                                     ->where('book_user.owner_id', $this->user->id);
                                 $query->orderBy('book_user.created_at', 'ASC')->limit(1);
                             }
-                        ])
-                    )
+                        ]))
                     ->paginate(config('paginate.default'), $select);
             }
 
@@ -506,10 +504,27 @@ class UserRepositoryEloquent extends AbstractRepositoryEloquent implements UserR
             ->first();
     }
 
-    public function addReputation($userId, $point, $logId, $logType, LogReputationRepository $logReputationRepository) {
+    public function addReputation($userId, $point, $logId, $logType, LogReputationRepository $logReputationRepository)
+    {
         $user = $this->model()->findOrFail($userId);
         $user->reputation_point = $user->reputation_point + $point;
         $user->save();
         $logReputationRepository->addLog($logId, $logType, $point);
+    }
+
+    public function setRole(User $user, $role)
+    {
+        $user->update(['role' => $role]);
+        Event::fire('androidNotification', config('model.notification.set_role'));
+        $message = sprintf(translate('notification.set_role'), $this->user->name, $role);
+        event(new NotificationHandler($message, $user->id, config('model.notification.set_role')));
+        Event::fire('notification', [
+            [
+                'current_user_id' => $this->user->id,
+                'get_user_id' => $user->id,
+                'target_id' => $user->id,
+                'type' => config('model.notification.set_role'),
+            ]
+        ]);
     }
 }

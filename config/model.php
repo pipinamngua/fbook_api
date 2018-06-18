@@ -108,6 +108,7 @@ return [
             'delete_request_update_book' => 'delete_edit_book',
         ],
         'follow' => 'follow',
+        'set_role' => 'set_role',
     ],
     'review_messeges' => [
         'can_not_vote' => 'can_not_vote',
