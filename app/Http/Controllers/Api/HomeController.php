@@ -6,6 +6,7 @@ use App\Contracts\Repositories\BookRepository;
 use App\Http\Requests\Api\HomeFilterRequest;
 use App\Contracts\Repositories\OwnerRepository;
 use Illuminate\Http\Request;
+use App\Contracts\Repositories\PostRepository;
 
 class HomeController extends ApiController
 {
@@ -49,20 +50,30 @@ class HomeController extends ApiController
         'position',
     ];
 
+    protected $postSelect = [
+        'id',
+        'slide_url',
+        'title',
+        'slug',
+        'content',
+    ];
+
     protected $bookRepository;
     protected $ownerRepository;
+    protected $postRepository;
 
-    public function __construct(BookRepository $bookRepository, OwnerRepository $ownerRepository)
+    public function __construct(BookRepository $bookRepository, OwnerRepository $ownerRepository, PostRepository $postRepository)
     {
         parent::__construct();
         $this->bookRepository = $bookRepository;
         $this->ownerRepository = $ownerRepository;
+        $this->postRepository = $postRepository;
     }
 
     public function index(Request $request)
     {
         $officeId = $request->get('office_id');
-        $top = $this->getData(function() {
+        $top = $this->getData(function () {
             $this->compacts['item'] = $this->ownerRepository->topOwnBook();
         });
 
@@ -81,8 +92,9 @@ class HomeController extends ApiController
             },
         ];
 
-        return $this->getData(function() use ($relations, $officeId, $top){
+        return $this->getData(function () use ($relations, $officeId, $top) {
             $this->compacts['items'] = $this->bookRepository->getDataInHomepage($relations, $this->bookSelect, $officeId, $top);
+            $this->compacts['posts'] = $this->postRepository->getDataPostHome();
         });
     }
 
@@ -105,10 +117,27 @@ class HomeController extends ApiController
             },
         ];
 
-        return $this->getData(function() use ($relations, $filters, $officeId){
+        return $this->getData(function () use ($relations, $filters, $officeId) {
             $this->compacts['items'] = $this->bookRepository->getDataFilterInHomepage(
-                $relations, $this->bookSelect, $filters, $officeId
+                $relations,
+                $this->bookSelect,
+                $filters,
+                $officeId
             );
+        });
+    }
+
+    public function getListPost()
+    {
+        return $this->getData(function () {
+            $this->compacts['items'] = $this->postRepository->getData();
+        });
+    }
+
+    public function getPost($id)
+    {
+        return $this->getData(function () use ($id) {
+            $this->compacts['items'] = $this->postRepository->getDataPost($id);
         });
     }
 }

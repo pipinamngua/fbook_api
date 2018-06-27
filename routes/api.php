@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], function () {
     Route::get('home', ['as' => 'home', 'uses' => 'HomeController@index']);
     Route::post('home/filters', ['as' => 'homeFilters', 'uses' => 'HomeController@filter']);
+    Route::get('home/get-list-posts', 'HomeController@getListPost');
+    Route::get('home/get-post/{id}', 'HomeController@getPost');
     Route::group(['namespace' => 'Auth'], function () {
         Route::post('register', ['as' => 'register', 'uses' => 'RegisterController@create']);
         Route::post('login', ['as' => 'login', 'uses' => 'LoginController@login']);
@@ -106,5 +108,7 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::post('books/search', 'BookController@searchAdmin');
         Route::delete('books/delete/{id}', ['as' => 'books.delete', 'uses' => 'BookController@destroyBook']);
         Route::post('set-role-user/{id}/{role}', 'UserController@setRoleUser');
+        Route::resource('posts', 'PostController');
+        Route::post('posts/update/{id}', 'PostController@updatePost');
     });
 });

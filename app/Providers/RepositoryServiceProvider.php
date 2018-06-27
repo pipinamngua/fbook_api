@@ -34,7 +34,7 @@ class RepositoryServiceProvider extends ServiceProvider
          'vote' => [
             \App\Contracts\Repositories\VoteRepository::class,
             \App\Repositories\VoteRepositoryEloquent::class,
-        ],
+         ],
         'comment' => [
             \App\Contracts\Repositories\CommentRepository::class,
             \App\Repositories\CommentRepositoryEloquent::class,
@@ -46,6 +46,10 @@ class RepositoryServiceProvider extends ServiceProvider
         'log' => [
             \App\Contracts\Repositories\LogReputationRepository::class,
             \App\Repositories\LogReputationRepositoryEloquent::class,
+        ],
+        'post' => [
+            \App\Contracts\Repositories\PostRepository::class,
+            \App\Repositories\PostRepositoryEloquent::class,
         ],
 
     ];
