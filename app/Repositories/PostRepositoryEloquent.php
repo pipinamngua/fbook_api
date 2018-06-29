@@ -11,6 +11,7 @@ use App\Traits\Repositories\UploadableTrait;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
 use Log;
+use Illuminate\Pagination\Paginator;
 
 class PostRepositoryEloquent extends AbstractRepositoryEloquent implements PostRepository
 {
@@ -58,6 +59,18 @@ class PostRepositoryEloquent extends AbstractRepositoryEloquent implements PostR
         }
 
         return $post;
+    }
+
+    public function getDataPostByTitle(array $data, $limit = '')
+    {
+        Paginator::currentPageResolver(function () use ($data) {
+            return $data['page'];
+        });
+
+        return $this->model()
+            ->where('title', 'like', '%' . $data['key'] . '%')
+            ->latest()
+            ->paginate($limit ?: config('paginate.default'));
     }
 
     public function store(array $data)

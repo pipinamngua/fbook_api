@@ -95,4 +95,13 @@ class PostController extends ApiController
             throw new UnknownException($e->getMessage(), $e->getCode());
         }
     }
+
+    public function searchPostByTitle(Request $request)
+    {
+        $data = $request->only(['key', 'page']);
+        return $this->getData(function () use ($data) {
+            $data = $this->repository->getDataPostByTitle($data);
+            $this->compacts['items'] = $this->reFormatPaginate($data);
+        });
+    }
 }

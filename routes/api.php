@@ -110,5 +110,6 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::post('set-role-user/{id}/{role}', 'UserController@setRoleUser');
         Route::resource('posts', 'PostController');
         Route::post('posts/update/{id}', 'PostController@updatePost');
+        Route::post('posts/search', 'PostController@searchPostByTitle');
     });
 });
