@@ -29,6 +29,6 @@ class Vote extends Model
     
     public function logReputation()
     {
-        return $this->morphOne(LogReputation::class, 'log_id');
+        return $this->morphOne(LogReputation::class, 'log');
     }
 }
