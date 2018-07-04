@@ -138,6 +138,7 @@ class HomeController extends ApiController
     {
         return $this->getData(function () use ($id) {
             $this->compacts['items'] = $this->postRepository->getDataPost($id);
+            $this->compacts['suggest'] = $this->postRepository->getDataPostHome();
         });
     }
 }

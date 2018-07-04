@@ -149,4 +149,7 @@ return [
         'be_upvoted' => 4,
         'be_followed' => 5
     ],
+    'post' => [
+        'limit' => 5,
+    ],
 ];
