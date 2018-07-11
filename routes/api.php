@@ -116,5 +116,6 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::resource('logs', 'LogController', [
             'only' => ['index']
         ]);
+        Route::post('logs/search', ['as' => 'logs.search', 'uses' => 'LogController@searchLogByNameReciverPoint']);
     });
 });

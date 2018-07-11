@@ -15,6 +15,7 @@ use App\Exceptions\Api\UnknownException;
 use Illuminate\Support\Facades\DB;
 use Log;
 use Carbon\Carbon;
+use Illuminate\Support\collection;
 
 class LogReputationRepositoryEloquent extends AbstractRepositoryEloquent implements LogReputationRepository
 {
@@ -43,17 +44,17 @@ class LogReputationRepositoryEloquent extends AbstractRepositoryEloquent impleme
                 $logItem->pivot_data = json_decode($logItem->pivot_data, true);
                 $logItem->book = $logItem->logBook()->select($bookSelect)->firstOrFail();
                 $logItem->user = $logItem->userActionTo()->select($userSelect)->firstOrFail();
-            } else if ($logItem->log_type == config('model.log_type.approve_borrow')) {
+            } elseif ($logItem->log_type == config('model.log_type.approve_borrow')) {
                 $logItem->pivot_data = json_decode($logItem->pivot_data, true);
                 $logItem->book_pivot = $logItem->logBook()->select($bookSelect)->firstOrFail();
                 $logItem->user = $logItem->userActionTo()->select($userSelect)->firstOrFail();
                 $logItem->owner = $logItem->ownerReceived()->select($userSelect)->firstOrFail();
-            } else if ($logItem->log_type == config('model.log_type.be_upvoted')) {
+            } elseif ($logItem->log_type == config('model.log_type.be_upvoted')) {
                 $vote = $logItem->vote()->firstOrFail();
                 $logItem->review = $vote->reviewVote()->firstOrFail();
                 $logItem->user_vote = $vote->userVote()->select($userSelect)->firstOrFail();
                 $logItem->review_owner = $vote->reviewVote()->firstOrFail()->user()->select($userSelect)->firstOrFail();
-            } else if ($logItem->log_type == config('model.log_type.be_followed')) {
+            } elseif ($logItem->log_type == config('model.log_type.be_followed')) {
                 $userFollow = $logItem->userFollow()->firstOrFail();
                 $logItem->follower = $userFollow->userFollower()->select($userSelect)->firstOrFail();
                 $logItem->following = $userFollow->userFollowing()->select($userSelect)->firstOrFail();
@@ -65,7 +66,7 @@ class LogReputationRepositoryEloquent extends AbstractRepositoryEloquent impleme
 
     public function addLog($logId, $logType, $point)
     {
-        /* 
+        /*
         Check if have array of pivot table or not
         */
         if (is_int($logId)) {
@@ -87,7 +88,12 @@ class LogReputationRepositoryEloquent extends AbstractRepositoryEloquent impleme
     protected function getAction($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
     {
         return $this->getBooksByBookUserStatus(
-            config('model.book_user.status.returned'), $with, $dataSelect, $limit, $attribute, $officeId
+            config('model.book_user.status.returned'),
+            $with,
+            $dataSelect,
+            $limit,
+            $attribute,
+            $officeId
         );
     }
 
@@ -108,28 +114,65 @@ class LogReputationRepositoryEloquent extends AbstractRepositoryEloquent impleme
             if ($logItem->log_type == config('model.log_type.share_book') || $logItem->log_type == config('model.log_type.add_owner')) {
                 $logItem->pivot_data = json_decode($logItem->pivot_data, true);
                 $logItem->user= $logItem->userActionTo()->select($userSelect)->firstOrFail();
-            } else if ($logItem->log_type == config('model.log_type.approve_borrow')) {
+            } elseif ($logItem->log_type == config('model.log_type.approve_borrow')) {
                 $logItem->pivot_data = json_decode($logItem->pivot_data, true);
                 $logItem->user = $logItem->ownerReceived()->select($userSelect)->firstOrFail();
-            } else if ($logItem->log_type == config('model.log_type.be_upvoted')) {
+            } elseif ($logItem->log_type == config('model.log_type.be_upvoted')) {
                 $vote = $logItem->vote()->firstOrFail();
                 $logItem->user = $vote->reviewVote()->firstOrFail()->user()->select($userSelect)->firstOrFail();
-            } else if ($logItem->log_type == config('model.log_type.be_followed')) {
+            } elseif ($logItem->log_type == config('model.log_type.be_followed')) {
                 $userFollow = $logItem->userFollow()->firstOrFail();
                 $logItem->user = $userFollow->userFollowing()->select($userSelect)->firstOrFail();
             }
         }
         $log = $log->groupBy('user.id')->toArray();
         list($key, $value) = array_divide($log);
-        for ($i=0; $i < count($key) ; $i++) { 
+        for ($i=0; $i < count($key); $i++) {
             $sum = 0;
             foreach ($log[$key[$i]] as $item) {
-                $sum += $item['point']; 
+                $sum += $item['point'];
             }
             $temp->push(['user' => $log[$key[$i]][0]['user'], 'sum' => $sum]);
-         } 
+        }
         $temp = $temp->sortByDesc('sum');
 
         return $temp->take(config('model.top_hot_user.top'));
+    }
+
+    public function getDataSearchReciverPoint($name)
+    {
+        $logs = $this->getData();
+        $results = collect([]);
+
+        foreach ($logs as $log) {
+            if ($log->log_type == config('model.log_type.share_book')) {
+                $flag = str_contains(strtolower($log->user->name), strtolower($name));
+                if ($flag) {
+                    $results->push($log);
+                }
+            } elseif ($log->log_type == config('model.log_type.add_owner')) {
+                $flag = str_contains(strtolower($log->user->name), strtolower($name));
+                if ($flag) {
+                    $results->push($log);
+                }
+            } elseif ($log->log_type == config('model.log_type.approve_borrow')) {
+                $flag = str_contains(strtolower($log->owner->name), strtolower($name));
+                if ($flag) {
+                    $results->push($log);
+                }
+            } elseif ($log->log_type == config('model.log_type.be_upvoted')) {
+                $flag = str_contains(strtolower($log->review_owner->name), strtolower($name));
+                if ($flag) {
+                    $results->push($log);
+                }
+            } elseif ($log->log_type == config('model.log_type.be_followed')) {
+                $flag = str_contains(strtolower($log->following->name), strtolower($name));
+                if ($flag) {
+                    $results->push($log);
+                }
+            }
+        }
+        
+        return $results;
     }
 }

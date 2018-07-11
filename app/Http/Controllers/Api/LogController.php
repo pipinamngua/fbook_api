@@ -27,7 +27,7 @@ class LogController extends ApiController
 
     public function index()
     {
-        return $this->getData(function() {
+        return $this->getData(function () {
             $this->compacts['items'] = $this->repository->getData();
         });
     }
@@ -96,5 +96,14 @@ class LogController extends ApiController
     public function destroy($id)
     {
         //
+    }
+
+    public function searchLogByNameReciverPoint(Request $request)
+    {
+        $keyWord = $request->key;
+
+        return $this->getData(function () use ($keyWord) {
+            $this->compacts['items'] = $this->repository->getDataSearchReciverPoint($keyWord);
+        });
     }
 }
