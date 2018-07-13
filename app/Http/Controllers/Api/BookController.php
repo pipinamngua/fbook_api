@@ -27,6 +27,7 @@ use App\Contracts\Repositories\UserRepository;
 use App\Eloquent\User;
 use Log;
 use App\Eloquent\Book;
+use App\Exceptions\Api\UnknownException;
 
 class BookController extends ApiController
 {
@@ -499,9 +500,45 @@ class BookController extends ApiController
 
                 $this->repository->destroyBook($deleteBook);
             }, __FUNCTION__);
-
         } catch (ModelNotFoundException $e) {
             Log::error($e->getMessage());
+
+            throw new NotFoundException();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new UnknownException($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function addBookOffice($book_id, LogReputationRepository $logReputationRepository)
+    {
+        try {
+            $officeIdUserCurrent = $this->user->office_id;
+            
+            return $this->doAction(function () use ($book_id, $officeIdUserCurrent, $logReputationRepository) {
+                $book = $this->repository->findOrFail($book_id);
+                $this->compacts['items'] = $this->repository->storeBookOffice($book, $officeIdUserCurrent, $logReputationRepository);
+            }, __FUNCTION__);
+        } catch (ModelNotFoundException $e) {
+            Log::error($e->getMessage());
+
+            throw new NotFoundException();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            throw new UnknownException($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function getListBookCurrentUser($book_name, $action = '')
+    {
+        try {
+            return $this->getData(function () use ($book_name, $action) {
+                $this->compacts['items'] = $this->repository->getListBookCurrentUser($book_name, $action);
+            });
+        } catch (ModelNotFoundException $e) {
+            Log::error(new $e->getMessage());
 
             throw new NotFoundException();
         } catch (\Exception $e) {
