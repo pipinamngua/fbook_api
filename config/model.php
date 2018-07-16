@@ -131,6 +131,9 @@ return [
     'top_owner' => [
         'top' => 3
     ],
+    'top_hot_user' => [
+        'top' => 3
+    ],
     'reputation' => [
         'share_book' => 5,
         'add_owner' => 5,
