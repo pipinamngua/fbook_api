@@ -29,7 +29,11 @@ return [
         'approved' => [
             'approved_before' => 1,
             'never_approve' => 0,
-        ]
+        ],
+        'search' => [
+            'search_like' => 'search_like',
+            'search_equal' => 'search_equal',
+        ],
     ],
     'book_user_status_cancel' => 5,
     'filter_books' => [

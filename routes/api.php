@@ -72,6 +72,8 @@ Route::group(['prefix' => 'v0', 'as' => 'api.v0.', 'namespace' => 'Api'], functi
         Route::get('books/add-owner/{book_id}', ['as' => 'books.add-owner', 'uses' => 'BookController@addOwner']);
         Route::get('books/remove-owner/{book_id}', ['as' => 'books.remove-owner', 'uses' => 'BookController@removeOwner']);
         Route::post('books/upload-media', ['as' => 'books.uploadMedia', 'uses' => 'BookController@uploadMedia']);
+        Route::post('books/add-book-office/{book_id}', ['as' => 'books.add-book-office', 'uses' => 'BookController@addBookOffice']);
+        Route::post('books/check-book-current-user/{book_name}/{action}', ['as' => 'books.check-book-current-user', 'uses' => 'BookController@getListBookCurrentUser']);
         Route::get('notifications', ['as' => 'users.notifications', 'uses' => 'UserController@getNotifications']);
         Route::post('users/follow', ['as' => 'users.follow', 'uses' => 'UserController@followOrUnfollow']);
         Route::get('users/follow/info/{user_id}', ['as' => 'users.follow.info', 'uses' => 'UserController@getFollowInfo']);
