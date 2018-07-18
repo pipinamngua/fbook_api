@@ -7,6 +7,7 @@ use App\Http\Requests\Api\HomeFilterRequest;
 use App\Contracts\Repositories\OwnerRepository;
 use Illuminate\Http\Request;
 use App\Contracts\Repositories\PostRepository;
+use App\Contracts\Repositories\LogReputationRepository;
 
 class HomeController extends ApiController
 {
@@ -61,13 +62,15 @@ class HomeController extends ApiController
     protected $bookRepository;
     protected $ownerRepository;
     protected $postRepository;
+    protected $logRepository;
 
-    public function __construct(BookRepository $bookRepository, OwnerRepository $ownerRepository, PostRepository $postRepository)
+    public function __construct(BookRepository $bookRepository, OwnerRepository $ownerRepository, PostRepository $postRepository, LogReputationRepository $logRepository)
     {
         parent::__construct();
         $this->bookRepository = $bookRepository;
         $this->ownerRepository = $ownerRepository;
         $this->postRepository = $postRepository;
+        $this->logRepository = $logRepository;
     }
 
     public function index(Request $request)
@@ -75,6 +78,7 @@ class HomeController extends ApiController
         $officeId = $request->get('office_id');
         $top = $this->getData(function () {
             $this->compacts['item'] = $this->ownerRepository->topOwnBook();
+            $this->compacts['item2'] = $this->logRepository->topHotUser();
         });
 
         $relations = [

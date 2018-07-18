@@ -14,6 +14,7 @@ use App\Exceptions\Api\NotFoundException;
 use App\Exceptions\Api\UnknownException;
 use Illuminate\Support\Facades\DB;
 use Log;
+use Carbon\Carbon;
 
 class LogReputationRepositoryEloquent extends AbstractRepositoryEloquent implements LogReputationRepository
 {
@@ -88,5 +89,47 @@ class LogReputationRepositoryEloquent extends AbstractRepositoryEloquent impleme
         return $this->getBooksByBookUserStatus(
             config('model.book_user.status.returned'), $with, $dataSelect, $limit, $attribute, $officeId
         );
+    }
+
+    public function topHotUser()
+    {
+        $userSelect = [
+            'id',
+            'name',
+            'avatar',
+            'office_id'
+        ];
+        $temp = collect([]);
+        $date = date_modify(Carbon::now(), '-7 days');
+        $log = $this->model()
+            ->where('created_at', '>=', $date)
+            ->get();
+        foreach ($log as $logItem) {
+            if ($logItem->log_type == config('model.log_type.share_book') || $logItem->log_type == config('model.log_type.add_owner')) {
+                $logItem->pivot_data = json_decode($logItem->pivot_data, true);
+                $logItem->user= $logItem->userActionTo()->select($userSelect)->firstOrFail();
+            } else if ($logItem->log_type == config('model.log_type.approve_borrow')) {
+                $logItem->pivot_data = json_decode($logItem->pivot_data, true);
+                $logItem->user = $logItem->ownerReceived()->select($userSelect)->firstOrFail();
+            } else if ($logItem->log_type == config('model.log_type.be_upvoted')) {
+                $vote = $logItem->vote()->firstOrFail();
+                $logItem->user = $vote->reviewVote()->firstOrFail()->user()->select($userSelect)->firstOrFail();
+            } else if ($logItem->log_type == config('model.log_type.be_followed')) {
+                $userFollow = $logItem->userFollow()->firstOrFail();
+                $logItem->user = $userFollow->userFollowing()->select($userSelect)->firstOrFail();
+            }
+        }
+        $log = $log->groupBy('user.id')->toArray();
+        list($key, $value) = array_divide($log);
+        for ($i=0; $i < count($key) ; $i++) { 
+            $sum = 0;
+            foreach ($log[$key[$i]] as $item) {
+                $sum += $item['point']; 
+            }
+            $temp->push(['user' => $log[$key[$i]][0]['user'], 'sum' => $sum]);
+         } 
+        $temp = $temp->sortByDesc('sum');
+
+        return $temp->take(config('model.top_hot_user.top'));
     }
 }
