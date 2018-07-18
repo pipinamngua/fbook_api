@@ -58,31 +58,31 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $limit = config('paginate.book_home_limit');
 
         return [
-            [
-                'key' => config('model.filter_books.latest.key'),
-                'title' => config('model.filter_books.latest.title'),
-                'data' => $this->getLatestBooks($with, $dataSelect, $limit, [], $officeId)->items(),
-            ],
-            [
-                'key' => config('model.filter_books.view.key'),
-                'title' => config('model.filter_books.view.title'),
-                'data' => $this->getBooksByCountView($with, $dataSelect, $limit, [], $officeId)->items(),
-            ],
-            [
-                'key' => config('model.filter_books.rating.key'),
-                'title' => config('model.filter_books.rating.title'),
-                'data' => $this->getBooksByRating($with, $dataSelect, $limit, [], $officeId)->items(),
-            ],
-            [
-                'key' => config('model.filter_books.waiting.key'),
-                'title' => config('model.filter_books.waiting.title'),
-                'data' => $this->getBooksByWaiting($with, $dataSelect, $limit, [], $officeId)->items(),
-            ],
-            [
-                'key' => config('model.filter_books.read.key'),
-                'title' => config('model.filter_books.read.title'),
-                'data' => $this->getBooksByRead($with, $dataSelect, $limit, [], $officeId)->items(),
-            ],
+        [
+            'key' => config('model.filter_books.latest.key'),
+            'title' => config('model.filter_books.latest.title'),
+            'data' => $this->getLatestBooks($with, $dataSelect, $limit, [], $officeId)->items(),
+        ],
+        [
+            'key' => config('model.filter_books.view.key'),
+            'title' => config('model.filter_books.view.title'),
+            'data' => $this->getBooksByCountView($with, $dataSelect, $limit, [], $officeId)->items(),
+        ],
+        [
+            'key' => config('model.filter_books.rating.key'),
+            'title' => config('model.filter_books.rating.title'),
+            'data' => $this->getBooksByRating($with, $dataSelect, $limit, [], $officeId)->items(),
+        ],
+        [
+            'key' => config('model.filter_books.waiting.key'),
+            'title' => config('model.filter_books.waiting.title'),
+            'data' => $this->getBooksByWaiting($with, $dataSelect, $limit, [], $officeId)->items(),
+        ],
+        [
+            'key' => config('model.filter_books.read.key'),
+            'title' => config('model.filter_books.read.title'),
+            'data' => $this->getBooksByRead($with, $dataSelect, $limit, [], $officeId)->items(),
+        ],
         ];
     }
 
@@ -91,31 +91,31 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $limit = config('paginate.book_home_limit');
 
         return [
-            [
-                'key' => config('model.filter_books.latest.key'),
-                'title' => config('model.filter_books.latest.title'),
-                'data' => $this->getLatestBooks($with, $dataSelect, $limit, $attribute, $officeId)->items(),
-            ],
-            [
-                'key' => config('model.filter_books.view.key'),
-                'title' => config('model.filter_books.view.title'),
-                'data' => $this->getBooksByCountView($with, $dataSelect, $limit, $attribute, $officeId)->items(),
-            ],
-            [
-                'key' => config('model.filter_books.rating.key'),
-                'title' => config('model.filter_books.rating.title'),
-                'data' => $this->getBooksByRating($with, $dataSelect, $limit, $attribute, $officeId)->items(),
-            ],
-            [
-                'key' => config('model.filter_books.waiting.key'),
-                'title' => config('model.filter_books.waiting.title'),
-                'data' => $this->getBooksByWaiting($with, $dataSelect, $limit, $attribute, $officeId)->items(),
-            ],
-            [
-                'key' => config('model.filter_books.read.key'),
-                'title' => config('model.filter_books.read.title'),
-                'data' => $this->getBooksByRead($with, $dataSelect, $limit, $attribute, $officeId)->items(),
-            ],
+        [
+            'key' => config('model.filter_books.latest.key'),
+            'title' => config('model.filter_books.latest.title'),
+            'data' => $this->getLatestBooks($with, $dataSelect, $limit, $attribute, $officeId)->items(),
+        ],
+        [
+            'key' => config('model.filter_books.view.key'),
+            'title' => config('model.filter_books.view.title'),
+            'data' => $this->getBooksByCountView($with, $dataSelect, $limit, $attribute, $officeId)->items(),
+        ],
+        [
+            'key' => config('model.filter_books.rating.key'),
+            'title' => config('model.filter_books.rating.title'),
+            'data' => $this->getBooksByRating($with, $dataSelect, $limit, $attribute, $officeId)->items(),
+        ],
+        [
+            'key' => config('model.filter_books.waiting.key'),
+            'title' => config('model.filter_books.waiting.title'),
+            'data' => $this->getBooksByWaiting($with, $dataSelect, $limit, $attribute, $officeId)->items(),
+        ],
+        [
+            'key' => config('model.filter_books.read.key'),
+            'title' => config('model.filter_books.read.title'),
+            'data' => $this->getBooksByRead($with, $dataSelect, $limit, $attribute, $officeId)->items(),
+        ],
         ];
     }
 
@@ -124,33 +124,33 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $input = $this->getDataInput($attribute);
 
         return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->where(function ($query) use ($attribute, $officeId) {
-                if (isset($attribute['conditions']) && $attribute['conditions']) {
-                    foreach ($attribute['conditions'] as $conditions) {
-                        foreach ($conditions as $type => $typeIds) {
-                            if (in_array($type, config('model.filter_type')) && count($typeIds)) {
-                                $query->whereIn($type . '_id', $typeIds);
-                            }
+        ->select($dataSelect)
+        ->with($with)
+        ->where(function ($query) use ($attribute, $officeId) {
+            if (isset($attribute['conditions']) && $attribute['conditions']) {
+                foreach ($attribute['conditions'] as $conditions) {
+                    foreach ($conditions as $type => $typeIds) {
+                        if (in_array($type, config('model.filter_type')) && count($typeIds)) {
+                            $query->whereIn($type . '_id', $typeIds);
                         }
                     }
                 }
-                if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
-                    $query->where(function ($query) use ($attribute) {
-                        if (isset($attribute['search']['field']) && $attribute['search']['field']) {
-                            $query->where($attribute['search']['field'], 'LIKE', '%' . $attribute['search']['keyword'] . '%');
-                        } else {
-                            foreach (config('model.book.fields') as $field) {
-                                $query->where($field, 'LIKE', '%' . $attribute['search']['keyword'] . '%');
-                            }
+            }
+            if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
+                $query->where(function ($query) use ($attribute) {
+                    if (isset($attribute['search']['field']) && $attribute['search']['field']) {
+                        $query->where($attribute['search']['field'], 'LIKE', '%' . $attribute['search']['keyword'] . '%');
+                    } else {
+                        foreach (config('model.book.fields') as $field) {
+                            $query->where($field, 'LIKE', '%' . $attribute['search']['keyword'] . '%');
                         }
-                    });
-                }
-            })
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate(config('paginate.default'));
+                    }
+                });
+            }
+        })
+        ->getBookByOffice($officeId)
+        ->orderBy($input['sort']['field'], $input['sort']['type'])
+        ->paginate(config('paginate.default'));
     }
 
     public function getDataSearchTitle(array $attribute, $with = [], $dataSelect = ['*'], $officeId = '')
@@ -158,16 +158,16 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $input = $this->getDataInput($attribute);
 
         return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->where(function ($query) use ($attribute, $officeId) {
-                if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
-                    $query->where('title', 'LIKE', '%' . $attribute['search']['keyword'] . '%');
-                }
-            })
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate(config('paginate.default'));
+        ->select($dataSelect)
+        ->with($with)
+        ->where(function ($query) use ($attribute, $officeId) {
+            if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
+                $query->where('title', 'LIKE', '%' . $attribute['search']['keyword'] . '%');
+            }
+        })
+        ->getBookByOffice($officeId)
+        ->orderBy($input['sort']['field'], $input['sort']['type'])
+        ->paginate(config('paginate.default'));
     }
 
     public function getDataSearchAuthor(array $attribute, $with = [], $dataSelect = ['*'], $officeId = '')
@@ -175,16 +175,16 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $input = $this->getDataInput($attribute);
 
         return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->where(function ($query) use ($attribute, $officeId) {
-                if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
-                    $query->where('author', 'LIKE', '%' . $attribute['search']['keyword'] . '%');
-                }
-            })
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate(config('paginate.default'));
+        ->select($dataSelect)
+        ->with($with)
+        ->where(function ($query) use ($attribute, $officeId) {
+            if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
+                $query->where('author', 'LIKE', '%' . $attribute['search']['keyword'] . '%');
+            }
+        })
+        ->getBookByOffice($officeId)
+        ->orderBy($input['sort']['field'], $input['sort']['type'])
+        ->paginate(config('paginate.default'));
     }
 
     public function getDataSearchDescription(array $attribute, $with = [], $dataSelect = ['*'], $officeId = '')
@@ -192,16 +192,16 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $input = $this->getDataInput($attribute);
 
         return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->where(function ($query) use ($attribute, $officeId) {
-                if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
-                    $query->where('description', 'LIKE', '%' . $attribute['search']['keyword'] . '%');
-                }
-            })
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate(config('paginate.default'));
+        ->select($dataSelect)
+        ->with($with)
+        ->where(function ($query) use ($attribute, $officeId) {
+            if (isset($attribute['search']['keyword']) && $attribute['search']['keyword']) {
+                $query->where('description', 'LIKE', '%' . $attribute['search']['keyword'] . '%');
+            }
+        })
+        ->getBookByOffice($officeId)
+        ->orderBy($input['sort']['field'], $input['sort']['type'])
+        ->paginate(config('paginate.default'));
     }
 
     public function getDataSearchUser(array $attribute, $with = [])
@@ -219,12 +219,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $input = $this->getDataInput($attribute);
 
         return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->getData(config('model.filter_books.latest.field'), $input['filters'])
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate($limit ?: config('paginate.default'));
+        ->select($dataSelect)
+        ->with($with)
+        ->getData(config('model.filter_books.latest.field'), $input['filters'])
+        ->getBookByOffice($officeId)
+        ->orderBy($input['sort']['field'], $input['sort']['type'])
+        ->paginate($limit ?: config('paginate.default'));
     }
 
     protected function getLatestBooksInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
@@ -232,11 +232,11 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $input = $this->getDataInput($attribute);
 
         return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate($limit ?: config('paginate.default'));
+        ->select($dataSelect)
+        ->with($with)
+        ->getBookByOffice($officeId)
+        ->orderBy($input['sort']['field'], $input['sort']['type'])
+        ->paginate($limit ?: config('paginate.default'));
     }
 
     protected function getBooksByCountView($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
@@ -244,12 +244,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $input = $this->getDataInput($attribute);
 
         return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->getData(config('model.filter_books.view.field'), $input['filters'])
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate($limit ?: config('paginate.default'));
+        ->select($dataSelect)
+        ->with($with)
+        ->getData(config('model.filter_books.view.field'), $input['filters'])
+        ->getBookByOffice($officeId)
+        ->orderBy($input['sort']['field'], $input['sort']['type'])
+        ->paginate($limit ?: config('paginate.default'));
     }
 
     protected function getBooksByCountViewInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
@@ -257,12 +257,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $input = $this->getDataInput($attribute);
 
         return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->getData(config('model.filter_books.view.field'), $input['filters'])
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate($limit ?: config('paginate.default'));
+        ->select($dataSelect)
+        ->with($with)
+        ->getData(config('model.filter_books.view.field'), $input['filters'])
+        ->getBookByOffice($officeId)
+        ->orderBy($input['sort']['field'], $input['sort']['type'])
+        ->paginate($limit ?: config('paginate.default'));
     }
 
     protected function getBooksByRating($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
@@ -270,12 +270,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $input = $this->getDataInput($attribute);
 
         return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->getData(config('model.filter_books.rating.field'), $input['filters'])
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate($limit ?: config('paginate.default'));
+        ->select($dataSelect)
+        ->with($with)
+        ->getData(config('model.filter_books.rating.field'), $input['filters'])
+        ->getBookByOffice($officeId)
+        ->orderBy($input['sort']['field'], $input['sort']['type'])
+        ->paginate($limit ?: config('paginate.default'));
     }
 
     protected function getBooksByRatingInDetail($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
@@ -283,12 +283,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $input = $this->getDataInput($attribute);
 
         return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->getData(config('model.filter_books.rating.field'), $input['filters'])
-            ->getBookByOffice($officeId)
-            ->orderBy($input['sort']['field'], $input['sort']['type'])
-            ->paginate($limit ?: config('paginate.default'));
+        ->select($dataSelect)
+        ->with($with)
+        ->getData(config('model.filter_books.rating.field'), $input['filters'])
+        ->getBookByOffice($officeId)
+        ->orderBy($input['sort']['field'], $input['sort']['type'])
+        ->paginate($limit ?: config('paginate.default'));
     }
 
     protected function getBooksByBookUserStatus(
@@ -298,26 +298,25 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $limit = '',
         $attribute = [],
         $officeId = ''
-    )
-    {
+    ) {
         $input = $this->getDataInput($attribute);
 
         $numberOfUserWaitingBook = \DB::table('books')
-            ->join('book_user', 'books.id', '=', 'book_user.book_id')
-            ->select('book_user.book_id', \DB::raw('count(book_user.user_id) as count_waiting'))
-            ->where('book_user.status', $status)
-            ->groupBy('book_user.book_id')
-            ->orderBy('count_waiting', 'DESC')
-            ->limit($limit ?: config('paginate.default'))
-            ->get();
+        ->join('book_user', 'books.id', '=', 'book_user.book_id')
+        ->select('book_user.book_id', \DB::raw('count(book_user.user_id) as count_waiting'))
+        ->where('book_user.status', $status)
+        ->groupBy('book_user.book_id')
+        ->orderBy('count_waiting', 'DESC')
+        ->limit($limit ?: config('paginate.default'))
+        ->get();
 
         $books = $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->whereIn('id', $numberOfUserWaitingBook->pluck('book_id')->toArray())
-            ->getData($input['sort']['field'], $input['filters'], $input['sort']['type'])
-            ->getBookByOffice($officeId)
-            ->paginate($limit ?: config('paginate.default'));
+        ->select($dataSelect)
+        ->with($with)
+        ->whereIn('id', $numberOfUserWaitingBook->pluck('book_id')->toArray())
+        ->getData($input['sort']['field'], $input['filters'], $input['sort']['type'])
+        ->getBookByOffice($officeId)
+        ->paginate($limit ?: config('paginate.default'));
 
         foreach ($books->items() as $book) {
             $book->count_waiting = $numberOfUserWaitingBook->where('book_id', $book->id)->first()->count_waiting;
@@ -329,22 +328,32 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     protected function getBooksByWaiting($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
     {
         return $this->getBooksByBookUserStatus(
-            config('model.book_user.status.waiting'), $with, $dataSelect, $limit, $attribute, $officeId
+            config('model.book_user.status.waiting'),
+            $with,
+            $dataSelect,
+            $limit,
+            $attribute,
+            $officeId
         );
     }
 
     protected function getBooksByRead($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
     {
         return $this->getBooksByBookUserStatus(
-            config('model.book_user.status.returned'), $with, $dataSelect, $limit, $attribute, $officeId
+            config('model.book_user.status.returned'),
+            $with,
+            $dataSelect,
+            $limit,
+            $attribute,
+            $officeId
         );
     }
 
     protected function getDataInputCountView($attribute = [])
     {
         $sort = [
-            'field' => 'count_view',
-            'type' => 'desc'
+        'field' => 'count_view',
+        'type' => 'desc'
         ];
         $filters = [];
 
@@ -366,8 +375,8 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     protected function getDataInputRating($attribute = [])
     {
         $sort = [
-            'field' => 'avg_star',
-            'type' => 'desc'
+        'field' => 'avg_star',
+        'type' => 'desc'
         ];
         $filters = [];
 
@@ -413,23 +422,22 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             throw new ActionException('not_booking_book_owned');
         }
         $checkUser = $book->users()
-            ->wherePivot('user_id', $this->user->id)
-            ->wherePivot('owner_id', $ownerId)
-            ->orderBy('book_user.created_at', 'desc')
-            ->first();
+        ->wherePivot('user_id', $this->user->id)
+        ->wherePivot('owner_id', $ownerId)
+        ->orderBy('book_user.created_at', 'desc')
+        ->first();
         if ($checkUser) {
-            if (
-                $checkUser->pivot->status == config('model.book_user.status.reading')
-                && (
-                    $attributes['item']['status'] == config('model.book_user.status.returning')
-                    || $attributes['item']['status'] == config('model.book_user.status.returned')
-                )
+            if ($checkUser->pivot->status == config('model.book_user.status.reading')
+            && (
+                $attributes['item']['status'] == config('model.book_user.status.returning')
+                || $attributes['item']['status'] == config('model.book_user.status.returned')
+            )
             ) {
                 $book->users()
                     ->wherePivot('owner_id', $ownerId)
                     ->wherePivot('status', config('model.book_user.status.reading'))
                     ->updateExistingPivot($this->user->id, [
-                        'status' => config('model.book_user.status.returning'),
+                    'status' => config('model.book_user.status.returning'),
                     ]);
                 Event::fire('androidNotification', config('model.notification.returning'));
                 $message = sprintf(translate('notification.returing_book'), $this->user->name, $book->title);
@@ -442,9 +450,8 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                         'type' => config('model.notification.returning'),
                     ]
                 ]);
-            } elseif (
-                $checkUser->pivot->status == config('model.book_user.status.waiting')
-                && $attributes['item']['status'] == config('model.book_user_status_cancel')
+            } elseif ($checkUser->pivot->status == config('model.book_user.status.waiting')
+            && $attributes['item']['status'] == config('model.book_user_status_cancel')
             ) {
                 $book->users()
                     ->wherePivot('status', config('model.book_user.status.waiting'))
@@ -454,15 +461,14 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                 event(new NotificationHandler($message, $ownerId, config('model.notification.cancel')));
                 Event::fire('notification', [
                     [
-                        'current_user_id' => $this->user->id,
-                        'get_user_id' => $ownerId,
-                        'target_id' => $book->id,
-                        'type' => config('model.notification.cancel'),
+                    'current_user_id' => $this->user->id,
+                    'get_user_id' => $ownerId,
+                    'target_id' => $book->id,
+                    'type' => config('model.notification.cancel'),
                     ]
                 ]);
-            } elseif (
-                $checkUser->pivot->status == config('model.book_user.status.returned')
-                && $attributes['item']['status'] == config('model.book_user.status.waiting')
+            } elseif ($checkUser->pivot->status == config('model.book_user.status.returned')
+            && $attributes['item']['status'] == config('model.book_user.status.waiting')
             ) {
                 $book->users()->attach($this->user->id, [
                     'status' => config('model.book_user.status.waiting'),
@@ -475,31 +481,31 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                 event(new NotificationHandler($message, $ownerId, config('model.notification.waiting')));
                 Event::fire('notification', [
                     [
-                        'current_user_id' => $this->user->id,
-                        'get_user_id' => $ownerId,
-                        'target_id' => $book->id,
-                        'type' => config('model.notification.waiting'),
+                    'current_user_id' => $this->user->id,
+                    'get_user_id' => $ownerId,
+                    'target_id' => $book->id,
+                    'type' => config('model.notification.waiting'),
                     ]
                 ]);
             }
         } else {
             $book->users()->attach($this->user->id, [
-                'status' => config('model.book_user.status.waiting'),
-                'owner_id' => $ownerId,
-                'days_to_read' => $attributes['item']['days_to_read'],
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+            'status' => config('model.book_user.status.waiting'),
+            'owner_id' => $ownerId,
+            'days_to_read' => $attributes['item']['days_to_read'],
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
             ]);
             Event::fire('androidNotification', config('model.notification.waiting'));
             $message = sprintf(translate('notification.waiting_book_borrowing'), $this->user->name, $book->title);
             event(new NotificationHandler($message, $ownerId, config('model.notification.waiting')));
             Event::fire('notification', [
-                [
-                    'current_user_id' => $this->user->id,
-                    'get_user_id' => $ownerId,
-                    'target_id' => $book->id,
-                    'type' => config('model.notification.waiting'),
-                ]
+            [
+                'current_user_id' => $this->user->id,
+                'get_user_id' => $ownerId,
+                'target_id' => $book->id,
+                'type' => config('model.notification.waiting'),
+            ]
             ]);
         }
     }
@@ -513,14 +519,14 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
             $book->reviews()->detach($this->user->id);
             $book->reviews()->attach([
-                $this->user->id => $dataReview
+            $this->user->id => $dataReview
             ]);
             $ownersId = $book->owners()->pluck('id');
             if (isset($dataReview['star'])) {
                 Event::fire('books.averageStar', [
                     [
-                        'book' => $book,
-                        'star' => $dataReview['star'],
+                    'book' => $book,
+                    'star' => $dataReview['star'],
                     ]
                 ]);
 
@@ -558,14 +564,14 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
 
             $book->reviews()->detach($this->user->id);
             $book->reviews()->attach([
-                $this->user->id => $dataReview
+            $this->user->id => $dataReview
             ]);
             $ownersId = $book->owners()->pluck('id');
             if (isset($dataReview['star'])) {
                 Event::fire('books.averageStar', [
                     [
-                        'book' => $book,
-                        'star' => $dataReview['star'],
+                    'book' => $book,
+                    'star' => $dataReview['star'],
                     ]
                 ]);
 
@@ -597,8 +603,8 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     protected function getDataInput($attribute = [])
     {
         $sort = [
-            'field' => 'created_at',
-            'type' => 'desc'
+        'field' => 'created_at',
+        'type' => 'desc'
         ];
         $filters = [];
 
@@ -623,31 +629,31 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             $book = $this->model()->findOrFail($id);
 
             return $book->load(['media', 'reviewsDetail',
-                'usersWaiting' => function ($query) {
-                    $query->select(array_merge($this->userSelect, ['owner_id']));
-                    $query->orderBy('book_user.created_at', 'ASC');
-                },
-                'usersReading' => function ($query) {
-                    $query->select(array_merge($this->userSelect, ['owner_id']));
-                    $query->orderBy('book_user.created_at', 'ASC');
-                },
-                'usersReturning' => function ($query) {
-                    $query->select(array_merge($this->userSelect, ['owner_id']));
-                    $query->orderBy('book_user.created_at', 'ASC');
-                },
-                'usersReturned' => function ($query) {
-                    $query->select(array_merge($this->userSelect, ['owner_id']));
-                    $query->orderBy('book_user.created_at', 'DESC');
-                },
-                'category' => function ($query) {
-                    $query->select('id', 'name_vi', 'name_en', 'name_jp');
-                },
-                'office' => function ($query) {
-                    $query->select('id', 'name');
-                },
-                'owners' => function ($query) {
-                    $query->select($this->userSelect);
-                }
+            'usersWaiting' => function ($query) {
+                $query->select(array_merge($this->userSelect, ['owner_id']));
+                $query->orderBy('book_user.created_at', 'ASC');
+            },
+            'usersReading' => function ($query) {
+                $query->select(array_merge($this->userSelect, ['owner_id']));
+                $query->orderBy('book_user.created_at', 'ASC');
+            },
+            'usersReturning' => function ($query) {
+                $query->select(array_merge($this->userSelect, ['owner_id']));
+                $query->orderBy('book_user.created_at', 'ASC');
+            },
+            'usersReturned' => function ($query) {
+                $query->select(array_merge($this->userSelect, ['owner_id']));
+                $query->orderBy('book_user.created_at', 'DESC');
+            },
+            'category' => function ($query) {
+                $query->select('id', 'name_vi', 'name_en', 'name_jp');
+            },
+            'office' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'owners' => function ($query) {
+                $query->select($this->userSelect);
+            }
             ]);
         } catch (ModelNotFoundException $e) {
             Log::error($e->getMessage());
@@ -734,8 +740,8 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         $book->owners()->detach($this->user->id);
         $book->owners()->attach($this->user->id, [
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
+        'created_at' => Carbon::now(),
+        'updated_at' => Carbon::now(),
         ]);
         $userRepository = new UserRepositoryEloquent();
         $logData['user_id'] = $this->user->id;
@@ -749,12 +755,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         if (!isset($attributes['medias'])) {
             $dataCompareBook = array_only($attributes, [
-                'title',
-                'description',
-                'author',
-                'publish_date',
-                'category_id',
-                'office_id',
+            'title',
+            'description',
+            'author',
+            'publish_date',
+            'category_id',
+            'office_id',
             ]);
             $bookExistedInDatabase = $this->model()->where($dataCompareBook)->first();
 
@@ -775,12 +781,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             $this->uploadAndSaveMediasForBook($attributes['medias'], $book, $mediaRepository);
         }
         Event::fire('notification', [
-            [
-                'current_user_id' => $this->user->id,
-                'get_user_id' => config('model.notification.add_book'),
-                'target_id' => $book->id,
-                'type' => config('model.notification.add_owner'),
-            ]
+        [
+            'current_user_id' => $this->user->id,
+            'get_user_id' => config('model.notification.add_book'),
+            'target_id' => $book->id,
+            'type' => config('model.notification.add_owner'),
+        ]
         ]);
 
         return $book->load('category', 'office', 'media');
@@ -794,9 +800,9 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     public function getBookByCategory($categoryId, $dataSelect = ['*'], $with = [], $officeId = '')
     {
         return $this->select($dataSelect)->with($with)
-            ->getBookByOffice($officeId)
-            ->where('category_id', $categoryId)
-            ->paginate(config('paginate.default'));
+        ->getBookByOffice($officeId)
+        ->where('category_id', $categoryId)
+        ->paginate(config('paginate.default'));
     }
 
     public function getBookFilteredByCategory($categoryId, $attribute = [], $dataSelect = ['*'], $with = [], $officeId = '')
@@ -804,12 +810,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $input = $this->getDataInput($attribute);
 
         return $this->model()
-            ->select($dataSelect)
-            ->with($with)
-            ->where('category_id', $categoryId)
-            ->getData($input['sort']['field'], $input['filters'], $input['sort']['type'])
-            ->getBookByOffice($officeId)
-            ->paginate(config('paginate.default'));
+        ->select($dataSelect)
+        ->with($with)
+        ->where('category_id', $categoryId)
+        ->getData($input['sort']['field'], $input['filters'], $input['sort']['type'])
+        ->getBookByOffice($officeId)
+        ->paginate(config('paginate.default'));
     }
 
     public function addOwner($id, LogReputationRepository $logReputationRepository)
@@ -820,12 +826,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             if ($bookOwner) {
                 $bookOwner->pivot->added = config('model.status_owner.added');
                 $bookOwner->pivot->updated_at = Carbon::now();
-                $bookOwner->pivot->deleted_at = NULL;
+                $bookOwner->pivot->deleted_at = null;
                 $bookOwner->pivot->save();
-            } else if (!$bookOwner) {
+            } elseif (!$bookOwner) {
                 $book->checkAddedOwner()->attach($this->user->id, [
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
                 ]);
                 $logData['user_id'] = $this->user->id;
                 $logData['book_id'] = $book->id;
@@ -839,12 +845,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                 throw new ActionException('ownered_current_book');
             }
             Event::fire('notification', [
-                [
-                    'current_user_id' => $this->user->id,
-                    'get_user_id' => config('model.notification.add_book'),
-                    'target_id' => $book->id,
-                    'type' => config('model.notification.add_owner'),
-                ]
+            [
+                'current_user_id' => $this->user->id,
+                'get_user_id' => config('model.notification.add_book'),
+                'target_id' => $book->id,
+                'type' => config('model.notification.add_owner'),
+            ]
             ]);
 
             return $bookOwner;
@@ -863,9 +869,9 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         // Delete requests of borrowing book
         $book->users()
-            ->wherePivot('owner_id', $this->user->id)
-            ->wherePivot('status', '<>', config('model.book_user.status.returned'))
-            ->detach();
+        ->wherePivot('owner_id', $this->user->id)
+        ->wherePivot('status', '<>', config('model.book_user.status.returned'))
+        ->detach();
 
         // Soft delete (can not use original soft delete for pivot)
         $bookOwner = $book->checkAddedOwner()->where('user_id', $this->user->id)->first();
@@ -873,12 +879,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         $bookOwner->pivot->save();
 
         Event::fire('notification', [
-            [
-                'current_user_id' => $this->user->id,
-                'get_user_id' => config('model.notification.remove_book'),
-                'target_id' => $book->id,
-                'type' => config('model.notification.remove_owner'),
-            ]
+        [
+            'current_user_id' => $this->user->id,
+            'get_user_id' => config('model.notification.remove_book'),
+            'target_id' => $book->id,
+            'type' => config('model.notification.remove_owner'),
+        ]
         ]);
         return $bookOwner;
     }
@@ -894,10 +900,10 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     {
         $userId = $attribute['user_id'];
         $approve = $book->users()
-            ->select('approved')
-            ->wherePivot('user_id', $userId)
-            ->wherePivot('owner_id', $this->user->id)
-            ->first();
+        ->select('approved')
+        ->wherePivot('user_id', $userId)
+        ->wherePivot('owner_id', $this->user->id)
+        ->first();
 
         return $approve;
     }
@@ -910,23 +916,23 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         if ($key == config('settings.book_key.approve')) {
             if ($ownerBook->pivot->status == config('model.book.status.available')) {
                 $waitingList = $book->usersWaiting()
-                    ->where('user_id', $userId)
-                    ->wherePivot('owner_id', $this->user->id)
-                    ->count();
+                ->where('user_id', $userId)
+                ->wherePivot('owner_id', $this->user->id)
+                ->count();
                 if ($waitingList) {
                     $book->owners()->updateExistingPivot($this->user->id, [
-                        'status' => config('model.book.status.unavailable'),
+                    'status' => config('model.book.status.unavailable'),
                     ]);
                     $book->users()
                         ->wherePivot('owner_id', $this->user->id)
                         ->wherePivot('status', config('model.book_user.status.waiting'))
                         ->updateExistingPivot($userId, [
-                            'status' => config('model.book_user.status.reading'),
+                        'status' => config('model.book_user.status.reading'),
                         ]);
                     $book->users()
                         ->wherePivot('owner_id', $this->user->id)
                         ->updateExistingPivot($userId, [
-                            'approved' => config('model.book_user.approved.approved_before'),
+                        'approved' => config('model.book_user.approved.approved_before'),
                         ]);
                     $book->users()
                         ->wherePivot('owner_id', '<>', $this->user->id)
@@ -937,10 +943,10 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     event(new NotificationHandler($message, $userId, config('model.notification.approve_waiting')));
                     Event::fire('notification', [
                         [
-                            'current_user_id' => $this->user->id,
-                            'get_user_id' => $userId,
-                            'target_id' => $book->id,
-                            'type' => config('model.notification.approve_waiting'),
+                        'current_user_id' => $this->user->id,
+                        'get_user_id' => $userId,
+                        'target_id' => $book->id,
+                        'type' => config('model.notification.approve_waiting'),
                         ]
                     ]);
                 } else {
@@ -948,28 +954,28 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                 }
             } else {
                 $returningList = $book->usersReturning()
-                    ->where('user_id', $userId)
-                    ->wherePivot('owner_id', $this->user->id)
-                    ->count();
+                ->where('user_id', $userId)
+                ->wherePivot('owner_id', $this->user->id)
+                ->count();
                 if ($returningList) {
                     $book->owners()->updateExistingPivot($this->user->id, [
-                        'status' => config('model.book.status.available'),
+                    'status' => config('model.book.status.available'),
                     ]);
                     $book->users()
                         ->wherePivot('owner_id', $this->user->id)
                         ->wherePivot('status', config('model.book_user.status.returning'))
                         ->updateExistingPivot($userId, [
-                            'status' => config('model.book_user.status.returned'),
+                        'status' => config('model.book_user.status.returned'),
                         ]);
                     Event::fire('androidNotification', config('model.notification.approve_returning'));
                     $message = sprintf(translate('notification.approve_returning_book'), $this->user->name, $book->title);
                     event(new NotificationHandler($message, $userId, config('model.notification.approve_returning')));
                     Event::fire('notification', [
                         [
-                            'current_user_id' => $this->user->id,
-                            'get_user_id' => $userId,
-                            'target_id' => $book->id,
-                            'type' => config('model.notification.approve_returning'),
+                        'current_user_id' => $this->user->id,
+                        'get_user_id' => $userId,
+                        'target_id' => $book->id,
+                        'type' => config('model.notification.approve_returning'),
                         ]
                     ]);
                 } else {
@@ -979,12 +985,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         } elseif ($key == config('settings.book_key.unapprove')) {
             if ($ownerBook->pivot->status == config('model.book.status.available')) {
                 $returnedList = $book->usersReturned()
-                    ->where('user_id', $userId)
-                    ->wherePivot('owner_id', $this->user->id)
-                    ->count();
+                ->where('user_id', $userId)
+                ->wherePivot('owner_id', $this->user->id)
+                ->count();
                 if ($returnedList) {
                     $book->owners()->updateExistingPivot($this->user->id, [
-                        'status' => config('model.book.status.unavailable'),
+                    'status' => config('model.book.status.unavailable'),
                     ]);
                     $book->users()->updateExistingPivot($userId, [
                         'status' => config('model.book_user.status.returning'),
@@ -994,12 +1000,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                 }
             } else {
                 $readingList = $book->usersReading()
-                    ->where('user_id', $userId)
-                    ->wherePivot('owner_id', $this->user->id)
-                    ->count();
+                ->where('user_id', $userId)
+                ->wherePivot('owner_id', $this->user->id)
+                ->count();
                 if ($readingList) {
                     $book->owners()->updateExistingPivot($this->user->id, [
-                        'status' => config('model.book.status.available'),
+                    'status' => config('model.book.status.available'),
                     ]);
                     $book->users()->updateExistingPivot($userId, [
                         'status' => config('model.book_user.status.waiting'),
@@ -1009,10 +1015,10 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     event(new NotificationHandler($message, $userId, config('model.notification.unapprove_waiting')));
                     Event::fire('notification', [
                         [
-                            'current_user_id' => $this->user->id,
-                            'get_user_id' => $userId,
-                            'target_id' => $book->id,
-                            'type' => config('model.notification.unapprove_waiting'),
+                        'current_user_id' => $this->user->id,
+                        'get_user_id' => $userId,
+                        'target_id' => $book->id,
+                        'type' => config('model.notification.unapprove_waiting'),
                         ]
                     ]);
                 } else {
@@ -1021,8 +1027,8 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             }
         } elseif ($key == config('settings.book_key.remove_waiting')) {
             $book->users()
-                ->wherePivot('status', config('model.book_user.status.waiting'))
-                ->detach($userId);
+            ->wherePivot('status', config('model.book_user.status.waiting'))
+            ->detach($userId);
         } else {
             throw new ActionException('data_invalid');
         }
@@ -1031,9 +1037,9 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     public function getBookByOffice($officeId, $dataSelect = ['*'], $with = [])
     {
         return $this->select($dataSelect)
-            ->with($with)
-            ->where('office_id', $officeId)
-            ->paginate(config('paginate.default'));
+        ->with($with)
+        ->where('office_id', $officeId)
+        ->paginate(config('paginate.default'));
     }
 
     public function requestUpdateBook(array $attributes, Book $book, MediaRepository $mediaRepository)
@@ -1068,12 +1074,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                 $message = sprintf(translate('notification.request_edit_book'), $this->user->name, $book->title);
                 event(new NotificationHandler($message, $user_admin_id, config('model.notification.admin.request_edit_book')));
                 Event::fire('notification', [
-                    [
-                        'current_user_id' => $this->user->id,
-                        'get_user_id' => $user_admin_id,
-                        'target_id' => $book->id,
-                        'type' => config('model.notification.admin.request_edit_book'),
-                    ]
+                [
+                    'current_user_id' => $this->user->id,
+                    'get_user_id' => $user_admin_id,
+                    'target_id' => $book->id,
+                    'type' => config('model.notification.admin.request_edit_book'),
+                ]
                 ]);
             }
         }
@@ -1084,24 +1090,24 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         try {
             $updateBook = app(UpdateBook::class)->findOrFail($updateBookId);
             $dataBookUpdate = [
-                'title' => $updateBook['title'],
-                'description' => $updateBook['description'],
-                'author' => $updateBook['author'],
-                'publish_date' => $updateBook['publish_date'],
-                'category_id' => $updateBook['category_id'],
-                'office_id' => $updateBook['office_id']
+            'title' => $updateBook['title'],
+            'description' => $updateBook['description'],
+            'author' => $updateBook['author'],
+            'publish_date' => $updateBook['publish_date'],
+            'category_id' => $updateBook['category_id'],
+            'office_id' => $updateBook['office_id']
             ];
 
             $updateBook->currentBookInfo()->update($dataBookUpdate);
             $currentBook = $updateBook->currentBookInfo;
 
             foreach ($updateBook->updateMedia as $updateMedia) {
-                if ($updateMedia['media_id'] != NULL) {
+                if ($updateMedia['media_id'] != null) {
                     $dataFile = [
-                        'name' => $updateMedia['name'],
-                        'size' => $updateMedia['size'],
-                        'type' => $updateMedia['type'],
-                        'path' => $updateMedia['path']
+                    'name' => $updateMedia['name'],
+                    'size' => $updateMedia['size'],
+                    'type' => $updateMedia['type'],
+                    'path' => $updateMedia['path']
                     ];
 
                     $currentMedia = $currentBook->media()->findOrFail($updateMedia['media_id']);
@@ -1115,10 +1121,10 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
                     $dataFile = [];
                 } else {
                     $dataFile = [
-                        'name' => $updateMedia['name'],
-                        'size' => $updateMedia['size'],
-                        'type' => $updateMedia['type'],
-                        'path' => $updateMedia['path']
+                    'name' => $updateMedia['name'],
+                    'size' => $updateMedia['size'],
+                    'type' => $updateMedia['type'],
+                    'path' => $updateMedia['path']
                     ];
 
                     $currentBook->media()->create($dataFile);
@@ -1129,12 +1135,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             $message = sprintf(translate('notification.approve_request_update_book'), $this->user->name, $updateBook->title);
             event(new NotificationHandler($message, $updateBook->user_id, config('model.notification.admin.approve_request_update_book')));
             Event::fire('notification', [
-                [
-                    'current_user_id' => $this->user->id,
-                    'get_user_id' => $updateBook->user_id,
-                    'target_id' => $updateBook->book_id,
-                    'type' => config('model.notification.admin.approve_request_update_book'),
-                ]
+            [
+                'current_user_id' => $this->user->id,
+                'get_user_id' => $updateBook->user_id,
+                'target_id' => $updateBook->book_id,
+                'type' => config('model.notification.admin.approve_request_update_book'),
+            ]
             ]);
 
             $updateBook->delete();
@@ -1158,12 +1164,12 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             $message = sprintf(translate('notification.delete_request_edit_book'), $this->user->name, $updateBook->title);
             event(new NotificationHandler($message, $updateBook->user_id, config('model.notification.admin.delete_request_update_book')));
             Event::fire('notification', [
-                [
-                    'current_user_id' => $this->user->id,
-                    'get_user_id' => $updateBook->user_id,
-                    'target_id' => $updateBook->book_id,
-                    'type' => config('model.notification.admin.delete_request_update_book'),
-                ]
+            [
+                'current_user_id' => $this->user->id,
+                'get_user_id' => $updateBook->user_id,
+                'target_id' => $updateBook->book_id,
+                'type' => config('model.notification.admin.delete_request_update_book'),
+            ]
             ]);
 
             foreach ($updateBook->updateMedia as $updateMedia) {
@@ -1190,11 +1196,11 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     public function getByPage($dataSelect = ['*'], $withRelation = [])
     {
         return $this->model()
-            ->select($dataSelect)
-            ->with(array_merge($withRelation, ['office', 'image']))
-            ->withCount('owners')
-            ->orderBy('created_at', 'ASC')
-            ->paginate(config('paginate.default'));
+        ->select($dataSelect)
+        ->with(array_merge($withRelation, ['office', 'image']))
+        ->withCount('owners')
+        ->orderBy('created_at', 'ASC')
+        ->paginate(config('paginate.default'));
     }
 
     public function searchBook($data, $dataSelect = ['*'], $withRelation = [])
@@ -1204,17 +1210,17 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
         });
         if ($data['type'] == config('model.filter_book.by_title')) {
             $query = $this->model()
-                ->where('title', 'like', '%' . $data['key'] . '%');
+            ->where('title', 'like', '%' . $data['key'] . '%');
         } else {
             $query = $this->model()
-                ->where('author', 'like', '%' . $data['key'] . '%');
+            ->where('author', 'like', '%' . $data['key'] . '%');
         }
 
         return $query->select($dataSelect)
-            ->with(array_merge($withRelation, ['office']))
-            ->withCount('owners')
-            ->orderBy('created_at', 'ASC')
-            ->paginate(config('paginate.default'));
+        ->with(array_merge($withRelation, ['office']))
+        ->withCount('owners')
+        ->orderBy('created_at', 'ASC')
+        ->paginate(config('paginate.default'));
     }
 
     public function countHaveBook()
@@ -1225,5 +1231,68 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
     public function destroyBook(Book $deleteBook)
     {
         $deleteBook->delete();
+    }
+
+    public function storeBookOffice(Book $book, $officeIdUserCurrent, LogReputationRepository $logReputationRepository)
+    {
+        $dataBook = [
+            'title' => $book->title,
+            'description' => $book->description,
+            'author' => $book->author,
+            'publish_date' => $book->publish_date,
+            'category_id' => $book->category_id,
+            'office_id' => $officeIdUserCurrent,
+            'code' => sha1(time()),
+        ];
+        $medias = $book->media()->get();
+        $bookNew = $this->model()->create($dataBook);
+
+        foreach ($medias as $media) {
+            $this->saveImageBookCurrent($media, $bookNew->id);
+        }
+
+        $this->addOwnerBook($bookNew, $logReputationRepository);
+        
+        Event::fire('notification', [
+        [
+            'current_user_id' => $this->user->id,
+            'get_user_id' => config('model.notification.add_book'),
+            'target_id' => $bookNew->id,
+            'type' => config('model.notification.add_owner'),
+        ]
+        ]);
+
+        return $bookNew->load('category', 'office', 'media');
+    }
+
+    public function getListBookCurrentUser($book_name, $action = '')
+    {
+        $bookName = trim($book_name);
+        
+        if ($action == config('model.book_user.search.search_like')) {
+            $books = User::findOrFail($this->user->id)->owners()->whereHas('owners', function ($query) use ($bookName) {
+                $query->where('title', 'like', '%'. $bookName .'%');
+            })->get();
+        } else {
+            $books = User::findOrFail($this->user->id)->owners()->whereHas('owners', function ($query) use ($bookName) {
+                $query->where('title', $bookName);
+            })->get();
+        }
+
+        return $books;
+    }
+    protected function saveImageBookCurrent(Media $media, $idBookCurrent)
+    {
+        $m = new Media();
+        $dataMedia = [
+            'name' => $media->name,
+            'path' => $media->path,
+            'size' => $media->size,
+            'type' => $media->type,
+            'target_id' => $idBookCurrent,
+            'target_type' => $media->target_type,
+        ];
+        
+        $m->create($dataMedia);
     }
 }
