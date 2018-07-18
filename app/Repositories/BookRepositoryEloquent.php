@@ -204,6 +204,16 @@ class BookRepositoryEloquent extends AbstractRepositoryEloquent implements BookR
             ->paginate(config('paginate.default'));
     }
 
+    public function getDataSearchUser(array $attribute, $with = [])
+    {
+        $input = $this->getDataInput($attribute);
+
+        return User::select('id', 'avatar', 'name', 'office_id')
+            ->with(['office'])
+            ->where('name', 'LIKE', '%' . $attribute['search']['keyword'] . '%')
+            ->paginate(config('paginate.default'));
+    }
+
     protected function getLatestBooks($with = [], $dataSelect = ['*'], $limit = '', $attribute = [], $officeId = '')
     {
         $input = $this->getDataInput($attribute);

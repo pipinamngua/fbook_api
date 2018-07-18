@@ -189,6 +189,9 @@ class BookController extends ApiController
             $this->compacts['descriptions'] = $this->reFormatPaginate(
                 $this->repository->getDataSearchDescription($data, ['image', 'category', 'office', 'owners'], $this->select, $officeId)
             );
+            $this->compacts['users'] = $this->reFormatPaginate(
+                $this->repository->getDataSearchUser($data)
+            );
         });
     }
 
